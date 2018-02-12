@@ -1,129 +1,161 @@
 <div id="product" class="page-layout carded fullwidth" fusePerfectScrollbar>
 
-    <!-- TOP BACKGROUND -->
-    <div class="top-bg mat-accent-bg"></div>
-    <!-- / TOP BACKGROUND -->
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
 
-    <!-- CENTER -->
-    <div class="center">
+  <!-- CENTER -->
+  <div class="center">
 
-        <!-- HEADER -->
-        <div class="header white-fg" fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- HEADER -->
+    <div class="header white-fg" fxLayout="row" fxLayoutAlign="space-between center">
 
-            <!-- APP TITLE -->
-            <div fxLayout="row" fxLayoutAlign="start center">
+      <!-- APP TITLE -->
+      <div fxLayout="row" fxLayoutAlign="start center">
 
-                <button class="mr-0 mr-sm-16" mat-icon-button [routerLink]="'/users'">
-                    <mat-icon>arrow_back</mat-icon>
-                </button>
+        <button class="mr-0 mr-sm-16" mat-icon-button [routerLink]="'/users'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
 
-                <div class="product-image mr-8 mr-sm-16" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
-                    <img *ngIf="user.avatar" [src]="user.avatar">
-                    <img *ngIf="!user.avatar" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png">
+        <div class="product-image mr-8 mr-sm-16" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+          <img *ngIf="!userForm.value.avatar || userForm.value.avatar == ''" [src]="defaultAvatar">
+          <img *ngIf="userForm.value.avatar && userForm.value.avatar != ''" [src]="userForm.value.avatar">
+        </div>
+
+        <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+          <div class="h2" *ngIf="isEditMode">
+            {{userForm.value.firstName}} {{userForm.value.lastName}}
+          </div>
+          <div class="h2" *ngIf="!isEditMode">
+            New User
+          </div>
+          <div class="subtitle secondary-text">
+            <span>User Details</span>
+          </div>
+        </div>
+      </div>
+      <!-- / APP TITLE -->
+
+      <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0" [disabled]="!f.valid"
+               *ngIf="!isEditMode"
+               (click)="f.ngSubmit.emit()">
+         <span>ADD</span>
+       </button>-->
+
+      <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              [disabled]="userForm.status == 'INVALID' || userForm.pristine == true"
+              (click)="f.ngSubmit.emit()">
+        <span>SAVE</span>
+      </button>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+
+      <!-- CONTENT -->
+      <div class="content">
+        <form (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
+          <mat-tab-group>
+
+            <mat-tab label="Basic Info">
+
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput [formControl]="userForm.controls.firstName" placeholder="First Name" required>
+                      <mat-error *ngIf="userForm.controls.firstName.invalid">{{getErrorMessage('firstName','required','', '')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="lastName" [(formControl)]="userForm.controls.lastName" placeholder="Last Name" required>
+                      <mat-error *ngIf="userForm.controls.lastName.invalid">{{getErrorMessage('lastName','required','', '')}}   </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start" *ngIf="!isEditMode">
+                    <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="password" type="password" [(formControl)]="userForm.controls.password" placeholder="Password" [required]="!isEditMode">
+                      <mat-error *ngIf="userForm.controls.password.invalid">{{getErrorMessage('password','required','', '')}} </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input type="text"
+                             [formControl]="userForm.controls.phone"
+                             matInput name="phone" placeholder="Phone" required>
+                      <mat-error *ngIf="userForm.controls.phone.invalid">{{getErrorMessage('phone','required', 'pattern', '')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="email" placeholder="E-mail" required
+                             [formControl]="userForm.controls.email">
+                      <mat-error *ngIf="userForm.controls.email.invalid">{{getErrorMessage('email','required', '', '', 'email')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="website" placeholder="Website"
+                             [formControl]="userForm.controls.website">
+                      <mat-error *ngIf="userForm.controls.website.invalid">{{getErrorMessage('website','', '', 'pattern')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="User Status" name="status" [formControl]="userForm.controls.status" required>
+                        <mat-option value="active">Active</mat-option>
+                        <mat-option value="pending">Pending</mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="userForm.controls.status.invalid">{{getErrorMessage('status','required', '', '')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
                 </div>
 
-                <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
-                    <div class="h2" *ngIf="isEditMode">
-                        {{user.name}}
-                    </div>
-                    <div class="h2" *ngIf="!isEditMode">
-                        New User
-                    </div>
-                    <div class="subtitle secondary-text">
-                        <span>User Details</span>
-                    </div>
+                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
+                  <img *ngIf="userForm.value.avatar && userForm.value.avatar != ''" [src]="userForm.value.avatar">
+                  <!--<img *ngIf="!user.avatar" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png">-->
+                  <img *ngIf="!userForm.value.avatar || userForm.value.avatar == ''" [src]="defaultAvatar">
+                  <input type="file" accept="image/*" #file name="avatar" fxHide (change)="onFileChange($event)">
+                  <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
+                  <button mat-raised-button color="warn" (click)="removeFile($event)">Remove</button>
                 </div>
-            </div>
-            <!-- / APP TITLE -->
 
-            <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0" [disabled]="!f.valid" *ngIf="!isEditMode"
-                (click)="f.submit()">
-                <span>ADD</span>
-            </button>
-
-            <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0" [disabled]="!f.valid" *ngIf="isEditMode"
-                (click)="f.ngSubmit.emit()">
-                <span>SAVE</span>
-            </button>
-        </div>
-        <!-- / HEADER -->
-
-        <!-- CONTENT CARD -->
-        <div class="content-card mat-white-bg">
-
-            <!-- CONTENT -->
-            <div class="content">
-
-                <form (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
-
-                    <mat-tab-group>
-
-                        <mat-tab label="Basic Info">
-
-                            <div fxLayout="row" fxLayout.xs="column">
-                                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
-
-                                    <div fxLayout="row" fxLayoutAlign="start start">
-                                        <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
-                                        <mat-form-field class="w-100-p">
-                                            <input matInput name="firstName" [(ngModel)]="user.firstName" placeholder="First Name" required>
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div fxLayout="row" fxLayoutAlign="start start">
-                                        <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
-                                        <mat-form-field class="w-100-p">
-                                            <input matInput name="lastName" [(ngModel)]="user.lastName" placeholder="Last Name">
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div fxLayout="row" fxLayoutAlign="start start">
-                                        <mat-icon class="mr-12 mt-12">call</mat-icon>
-                                        <mat-form-field class="w-100-p">
-                                            <input matInput name="phone" [(ngModel)]="user.phone" placeholder="User Phone" required>
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div fxLayout="row" fxLayoutAlign="start start">
-                                        <mat-icon class="mr-12 mt-12">call</mat-icon>
-                                        <mat-form-field class="w-100-p">
-                                            <input matInput name="website" [(ngModel)]="user.website" placeholder="Website">
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div fxLayout="row" fxLayoutAlign="start start">
-                                        <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
-                                        <mat-form-field class="w-100-p">
-                                            <mat-select placeholder="Select User Status" name="status" [(value)]="user.status" required>
-                                                <mat-option value="active">Active</mat-option>
-                                                <mat-option value="pending">Pending</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-
-                                </div>
-
-                                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
-                                    <img *ngIf="user.avatar" [src]="user.avatar">
-                                    <img *ngIf="!user.avatar" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png">
-                                    <input type="file" #file fxHide (change)="onFileChange($event)">
-                                    <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
-                                </div>
-
-                            </div>
+              </div>
 
 
-                        </mat-tab>
+            </mat-tab>
 
-                    </mat-tab-group>
-                </form>
+          </mat-tab-group>
+        </form>
+        <!-- / CONTENT -->
 
-            </div>
-            <!-- / CONTENT -->
-
-        </div>
-        <!-- / CONTENT CARD -->
+      </div>
+      <!-- / CONTENT CARD -->
 
     </div>
     <!-- / CENTER -->
+  </div>
 </div>

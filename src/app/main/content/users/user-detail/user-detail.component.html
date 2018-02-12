@@ -1,3 +1,117 @@
-<p>
-  user-detail works!
-</p>
+<div id="order" class="page-layout carded fullwidth" fusePerfectScrollbar>
+
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- HEADER -->
+    <div class="header white-fg"
+         fxLayout="row" fxLayoutAlign="space-between center">
+
+      <!-- APP TITLE -->
+      <div fxLayout="row" fxLayoutAlign="start center">
+
+        <button class="mr-16" mat-icon-button [routerLink]="'/users'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div class="product-image mr-8 mr-sm-16" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+          <img *ngIf="!user.avatar || user.avatar == ''" [src]="defaultAvatar">
+          <img *ngIf="user.avatar != ''" [src]="user.avatar">
+        </div>
+
+        <div fxLayout="column" fxLayoutAlign="start start"
+             *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+          <div class="h2">
+            {{user.firstName}} {{user.lastName}}
+          </div>
+
+        </div>
+      </div>
+      <!-- / APP TITLE -->
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <mat-tab-group>
+
+          <mat-tab label="User Details">
+
+            <div class="invoice tab-content p-24" fusePerfectScrollbar>
+
+              <div id="invoice" class="compact page-layout blank" fxLayout="row" fusePerfectScrollbar>
+
+                <div class="invoice-container">
+
+                  <!-- INVOICE -->
+                  <div class="card">
+
+                    <div class="header1">
+                      <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                        <div class="client">
+                          <div class="invoice-number" fxLayout="row" fxLayoutAlign="start center">
+                            <span class="mat-headline">{{user.firstName}} {{user.lastName}}</span>
+                            <mat-icon *ngIf="user.status==='active'" class="mb-12 ml-4 green">check_circle</mat-icon>
+                            <mat-icon *ngIf="user.status==='pending'" class="mb-12 ml-4 red">highlight_off</mat-icon>
+                          </div>
+
+                          <div class="info">
+                            <div class="phone">{{user.phone}}</div>
+                            <div class="email">{{user.email}}</div>
+                            <div class="address">{{user.website}}</div>
+                          </div>
+                          <mat-divider></mat-divider>
+                          <br/>
+                          <div class="info">
+                            <div>Followed
+                              <mat-icon *ngIf="user.isFollowed==true" class=" green">check_circle</mat-icon>
+                              <mat-icon *ngIf="user.isFollowed==false" class=" red">highlight_off</mat-icon>
+                            </div>
+                            <div *ngIf="user.isFollowed==true">Following Count <span class="number">{{user.followersCount}}</span>
+                            </div>
+                            <div>Advertisement Count <span class="number">{{user.advertisementCount}} </span></div>
+
+                          </div>
+                        </div>
+
+                        <div class="issuer" fxLayout="row" fxLayoutAlign="start center">
+                          <div class="logo">
+                            <img *ngIf="!user.avatar || user.avatar == ''" [src]="defaultAvatar">
+                            <img *ngIf="user.avatar && user.avatar != ''" [src]="user.avatar">
+                          </div>
+
+
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- / INVOICE -->
+
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+        </mat-tab-group>
+
+      </div>
+      <!-- / CONTENT -->
+
+    </div>
+    <!-- / CONTENT CARD -->
+
+  </div>
+  <!-- / CENTER -->
+</div>
+
