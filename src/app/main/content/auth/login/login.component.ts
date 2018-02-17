@@ -1,13 +1,13 @@
-import { AppException } from './../../shared/app.exception';
-import { MatSnackBar } from '@angular/material';
-import { HelpersService } from './../../shared/helpers.service';
-import { Router } from '@angular/router';
-import { AuthService } from './../auth.service';
-import { NgForm } from '@angular/forms';
-import { FuseConfigService } from './../../../../core/services/config.service';
-import { fuseAnimations } from './../../../../core/animations';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { PageAction } from '../../shared/enums/page-action';
+import {AppException} from './../../shared/app.exception';
+import {MatSnackBar} from '@angular/material';
+import {HelpersService} from './../../shared/helpers.service';
+import {Router} from '@angular/router';
+import {AuthService} from './../auth.service';
+import {NgForm} from '@angular/forms';
+import {FuseConfigService} from './../../../../core/services/config.service';
+import {fuseAnimations} from './../../../../core/animations';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {PageAction} from '../../shared/enums/page-action';
 
 @Component({
   selector: 'app-login',
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  onSubmit(form: NgForm){
+  onSubmit(form: NgForm) {
     const email = form.value.email;
     const password = form.value.password;
     this.authService.login(email, password).then(
@@ -41,11 +41,11 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       }
     ).catch((reason: AppException) => {
-      this.snackBar.open(reason.errorMessage,'',{
+      this.snackBar.open(reason.errorMessage, '', {
         duration: 2000,
-        extraClasses:'color:red'
+        extraClasses: 'color:red'
       });
-    })
+    });
   }
 
 }

@@ -1,23 +1,23 @@
 <div id="login" fxLayout="column" fusePerfectScrollbar>
-    
+
         <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
-    
+
             <div id="login-form" *fuseIfOnDom [@animate]="{value:'*',params:{duration:'300ms',y:'100px'}}">
-    
+
                 <div class="logo">
-                    <img src="assets/images/logos/fuse.svg">
+                    <img src="assets/images/logos/dlaaal.png">
                 </div>
-    
+
                 <div class="title">LOGIN TO YOUR ACCOUNT</div>
-    
+
                 <form (ngSubmit)="onSubmit(f)" #f="ngForm" novalidate>
-    
+
                     <mat-form-field>
-                        <input matInput placeholder="Email" 
+                        <input matInput placeholder="Email"
                         name="email"
-                        type="email" 
+                        type="email"
                         pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
-                        ngModel 
+                        ngModel
                         #email="ngModel">
                             <mat-error *ngIf="email.errors?.required && email.touched">
                                 Email is required
@@ -26,29 +26,29 @@
                                 Please enter a valid email address
                             </mat-error>
                     </mat-form-field>
-    
+
                     <mat-form-field>
-                        <input matInput 
-                        placeholder="Password" 
+                        <input matInput
+                        placeholder="Password"
                         name="password"
-                        required 
-                        type="password" 
-                        ngModel 
+                        required
+                        type="password"
+                        ngModel
                         #password="ngModel">
                         <mat-error *ngIf="!password.valid && password.touched">
                             Password is required
                         </mat-error>
                     </mat-form-field>
-    
+
                     <button type="submit" mat-raised-button color="accent" class="submit-button" aria-label="LOG IN"
                     [disabled]="!f.valid">
                         LOGIN
                     </button>
-    
+
                 </form>
-    
+
             </div>
-    
+
         </div>
-    
+
     </div>

@@ -19,6 +19,19 @@
         <span class="logo-text h1" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">Users</span>
       </div>
       <!-- / APP TITLE -->
+
+      <!-- SEARCH -->
+      <div class="search-input-wrapper ml-8 m-sm-0"
+           fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start center">
+        <label  class="mr-8">
+          <mat-icon class="secondary-text">search</mat-icon>
+        </label>
+        <mat-form-field floatPlaceholder="never" fxFlex="1 0 auto">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
+      </div>
+      <!-- / SEARCH -->
+
        <!--Add BUTTON-->
       <button mat-raised-button  class="reference-button mat-white-bg mt-16 mt-sm-0" aria-label="new" [routerLink]="'/users/new'" >
         <!--<mat-icon>add</mat-icon>-->
@@ -37,11 +50,12 @@
         </div>
       </div>
 
-      <div class="table-header">
+      <!--<div class="table-header">
         <mat-form-field>
           <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field>
-      </div>
+      </div>-->
+
       <mat-table #table [dataSource]="dataSource" [@animateStagger]="{value:'50'}" class="items-table"
                  fusePerfectScrollbar>
 
@@ -52,6 +66,17 @@
             <p>{{item.id}}</p>
           </mat-cell>
         </ng-container>
+
+        <!-- Image Column -->
+       <!-- <ng-container cdkColumnDef="avatar">
+          <mat-header-cell *cdkHeaderCellDef>Image</mat-header-cell>
+          <mat-cell *cdkCellDef="let item">
+            <img class="item-image"
+                 *ngIf="item.avatar" [alt]="item.title"
+                 [src]="item.avatar"/>
+            <img *ngIf="!item.avatar" [src]="defaultAvatar">
+          </mat-cell>
+        </ng-container>-->
 
         <!-- Name Column -->
         <ng-container cdkColumnDef="name">
@@ -83,7 +108,7 @@
 
         <!-- Status Column -->
         <ng-container cdkColumnDef="status">
-          <mat-header-cell *cdkHeaderCellDef fxHide fxShow.gt-sm>Status</mat-header-cell>
+          <mat-header-cell *cdkHeaderCellDef fxHide fxShow.gt-sm>Active</mat-header-cell>
           <mat-cell *cdkCellDef="let item" fxHide fxShow.gt-sm>
             <mat-icon *ngIf="item.status == 'active'" class="active-icon mat-green-600-bg s-16">check</mat-icon>
             <mat-icon *ngIf="item.status != 'active'" class="active-icon mat-red-500-bg s-16">check</mat-icon>

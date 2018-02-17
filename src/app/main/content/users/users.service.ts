@@ -13,7 +13,7 @@ import {AppException} from '../shared/app.exception';
 @Injectable()
 export class UsersService {
   private items: User[] = [];
-  //onUsersChanged: BehaviorSubject<any> = new BehaviorSubject({});
+  // onUsersChanged: BehaviorSubject<any> = new BehaviorSubject({});
   onSearchTextChanged: Subject<any> = new Subject();
 
   constructor(private http: HttpClient,
@@ -71,7 +71,7 @@ export class UsersService {
             reject(new AppException(error));
           }
         );
-       resolve(this.items);
+      // resolve(this.items);
     });
   }
 

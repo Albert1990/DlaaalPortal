@@ -17,6 +17,7 @@ import {FuseSampleModule} from './main/content/sample/sample.module';
 import {TranslateModule} from '@ngx-translate/core';
 import {HelpersService} from './main/content/shared/helpers.service';
 import {AuthService} from './main/content/auth/auth.service';
+import {AdvertisementsModule} from './main/content/advertisements/advertisements.module';
 
 const appRoutes: Routes = [
   {
@@ -33,6 +34,17 @@ const appRoutes: Routes = [
   {
     path: 'users',
     loadChildren: './main/content/users/users.module#UsersModule',
+    canLoad: [AuthGuardService]
+  },
+  /*{
+    path: 'advertisements',
+    loadChildren: () => AdvertsModule,
+    //loadChildren: './main/content/adverts/adverts.module#AdvertsModule',
+    canLoad: [AuthGuardService]
+  },*/
+  {
+    path: 'advertisements',
+    loadChildren: () => AdvertisementsModule,
     canLoad: [AuthGuardService]
   },
   {

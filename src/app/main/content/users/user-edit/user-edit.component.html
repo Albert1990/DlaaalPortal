@@ -82,7 +82,7 @@
                   </div>
 
                   <div fxLayout="row" fxLayoutAlign="start start" *ngIf="!isEditMode">
-                    <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
+                    <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
                     <mat-form-field class="w-100-p">
                       <input matInput name="password" type="password" [(formControl)]="userForm.controls.password" placeholder="Password" [required]="!isEditMode">
                       <mat-error *ngIf="userForm.controls.password.invalid">{{getErrorMessage('password','required','', '')}} </mat-error>
@@ -101,7 +101,7 @@
                   </div>
 
                   <div fxLayout="row" fxLayoutAlign="start start">
-                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-icon class="mr-12 mt-12">email</mat-icon>
                     <mat-form-field class="w-100-p">
                       <input matInput name="email" placeholder="E-mail" required
                              [formControl]="userForm.controls.email">
@@ -111,7 +111,7 @@
                   </div>
 
                   <div fxLayout="row" fxLayoutAlign="start start">
-                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-icon class="mr-12 mt-12">web</mat-icon>
                     <mat-form-field class="w-100-p">
                       <input matInput name="website" placeholder="Website"
                              [formControl]="userForm.controls.website">

@@ -1,6 +1,3 @@
-import {AppSettings} from './../../shared/app.settings';
-import {UserType} from './../enums/user-type';
-import {UserStatus} from './../enums/user-status';
 import {Subscription} from 'rxjs/Subscription';
 import {UsersService} from './../users.service';
 import {FuseSplashScreenService} from './../../../../core/services/splash-screen.service';
@@ -12,8 +9,6 @@ import {fuseAnimations} from './../../../../core/animations';
 import {Observable} from 'rxjs/Observable';
 import {User} from './../user.model';
 import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
-import {DataSource} from '@angular/cdk/collections';
-import {ActivatedRouteSnapshot} from '@angular/router/src/router_state';
 
 @Component({
   selector: 'app-user-list',
@@ -62,21 +57,25 @@ export class UserListComponent implements OnInit, OnDestroy {
     if (to === 'delete')
       this.deleteItem(item);
     else
-       this.router.navigate(['/users', item.id, to]);
+      this.router.navigate(['/users', item.id, to]);
   }
 
-  applyFilter(startedWith: string) {
-    if (startedWith.length >= 2) {
-      this.startedWith = startedWith;
-      this.paginator.pageIndex = 0;
-      this.usersService.listing(this.paginator.pageIndex,
-        this.paginator.pageSize,
-        startedWith).then(serverResult => {
-        console.log(serverResult);
-      }).catch(reason => {
-        console.log('error while filtering data');
-      });
-    }
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+
+    /* if (startedWith.length >= 2) {
+       this.startedWith = startedWith;
+       this.paginator.pageIndex = 0;
+       this.usersService.listing(this.paginator.pageIndex,
+         this.paginator.pageSize,
+         startedWith).then(serverResult => {
+         console.log(serverResult);
+       }).catch(reason => {
+         console.log('error while filtering data');
+       });
+     }*/
   }
 
   deleteItem(item: string) {
@@ -88,7 +87,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
     this.confirmDialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log("item ", item);
+        console.log('item ', item);
         // this.loadingScreen.show();
         this.usersService.delete(item).then(
           (serverResult) => {

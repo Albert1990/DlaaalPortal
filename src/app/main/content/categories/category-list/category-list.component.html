@@ -7,99 +7,117 @@
   <!-- CENTER -->
   <div class="center">
 
-      <!-- HEADER -->
-      <div class="header white-fg" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row" fxLayoutAlign.gt-xs="space-between center">
+    <!-- HEADER -->
+    <div class="header white-fg" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-xs="row"
+         fxLayoutAlign.gt-xs="space-between center">
 
-          <!-- APP TITLE -->
-          <div class="logo my-12 m-sm-0" fxLayout="row" fxLayoutAlign="start center">
-              <mat-icon class="logo-icon mr-16" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">account_box</mat-icon>
-              <span class="logo-text h1" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">Categories</span>
-          </div>
-          <!-- / APP TITLE -->
-
+      <!-- APP TITLE -->
+      <div class="logo my-12 m-sm-0" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="logo-icon mr-16" *fuseIfOnDom [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+          group_work
+        </mat-icon>
+        <span class="logo-text h1" *fuseIfOnDom
+              [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">Categories</span>
       </div>
-      <!-- / HEADER -->
-
-      <!-- CONTENT CARD -->
-      <div class="content-card mat-white-bg">
-          <div class="table-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
-              <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-              <div class="table-rate-limit-reached" *ngIf="isRateLimitReached">
-                  No Data Available
-              </div>
-          </div>
-
-          <div class="table-header">
-                  <mat-form-field>
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-                  </mat-form-field>
-                </div>
-          <mat-table #table [dataSource]="dataSource" [@animateStagger]="{value:'50'}" class="items-table" fusePerfectScrollbar>
-
-              <!-- Id Column -->
-              <ng-container cdkColumnDef="id">
-                  <mat-header-cell *cdkHeaderCellDef>ID</mat-header-cell>
-                  <mat-cell *cdkCellDef="let item">
-                      <p>{{item.id}}</p>
-                  </mat-cell>
-              </ng-container>
-
-              <!-- Image Column -->
-              <ng-container cdkColumnDef="image">
-                <mat-header-cell *cdkHeaderCellDef></mat-header-cell>
-                <mat-cell *cdkCellDef="let item">
-                    <img class="item-image"
-                         *ngIf="item.image" [alt]="item.title"
-                         [src]="item.image"/>
-                    <img *ngIf="!item.image" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
-                </mat-cell>
-              </ng-container>
-
-              <!-- Title Column -->
-              <ng-container cdkColumnDef="title">
-                  <mat-header-cell *cdkHeaderCellDef>Title</mat-header-cell>
-                  <mat-cell *cdkCellDef="let item">
-                      <p class="text-truncate font-weight-600">{{item.title}}</p>
-                  </mat-cell>
-              </ng-container>
-
-              <!-- Buttons Column -->
-              <ng-container cdkColumnDef="buttons">
-                  <mat-header-cell *cdkHeaderCellDef></mat-header-cell>
-                  <mat-cell *cdkCellDef="let item">
-
-                      <div fxFlex="row" fxLayoutAlign="end center">
-
-                          <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More" (click)="$event.stopPropagation();">
-                              <mat-icon>more_vert</mat-icon>
-                          </button>
-
-                          <mat-menu #moreMenu="matMenu">
-                              <button mat-menu-item aria-label="edit" (click)="editItem(item.id)">
-                                  <mat-icon>edit</mat-icon>
-                                  <span>Edit</span>
-                              </button>
-
-                              <button mat-menu-item aria-label="remove" (click)="deleteItem(item.id)">
-                                  <mat-icon>delete</mat-icon>
-                                  <span>Remove</span>
-                              </button>
-                          </mat-menu>
-                      </div>
-
-                  </mat-cell>
-              </ng-container>
-
-              <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *cdkRowDef="let item; columns: displayedColumns;" (click)="editItem(item.id)" matRipple [@animate]="{value:'*',params:{y:'100%'}}"
-              class="item">
-              </mat-row>
-          </mat-table>
-
-          <mat-paginator [length]="resultsLength" [pageSize]="20" [pageSizeOptions] = [10,20,30]>
-          </mat-paginator>
+      <!-- / APP TITLE -->
+      <!-- SEARCH -->
+      <div class="search-input-wrapper ml-8 m-sm-0"
+           fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start center">
+        <label class="mr-8">
+          <mat-icon class="secondary-text">search</mat-icon>
+        </label>
+        <mat-form-field floatPlaceholder="never" fxFlex="1 0 auto">
+          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+        </mat-form-field>
       </div>
-      <!-- / CONTENT CARD -->
+      <!-- / SEARCH -->
+
+      <button mat-raised-button class="reference-button mat-white-bg mt-16 mt-sm-0" aria-label="new"
+              [routerLink]="'/categories/new'">
+        <span>New</span>
+      </button>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+      <div class="table-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+        <div class="table-rate-limit-reached" *ngIf="isRateLimitReached">
+          No Data Available
+        </div>
+      </div>
+
+      <mat-table #table [dataSource]="dataSource" [@animateStagger]="{value:'50'}" class="items-table"
+                 fusePerfectScrollbar>
+
+        <!-- Id Column -->
+        <ng-container cdkColumnDef="id">
+          <mat-header-cell *cdkHeaderCellDef>ID</mat-header-cell>
+          <mat-cell *cdkCellDef="let item">
+            <p>{{item.id}}</p>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Image Column -->
+        <ng-container cdkColumnDef="image">
+          <mat-header-cell *cdkHeaderCellDef>Image</mat-header-cell>
+          <mat-cell *cdkCellDef="let item">
+            <img class="item-image"
+                 *ngIf="item.image" [alt]="item.title"
+                 [src]="item.image"/>
+            <img *ngIf="!item.image" [src]="'assets/images/ecommerce/product-image-placeholder.png'">
+          </mat-cell>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container cdkColumnDef="title">
+          <mat-header-cell *cdkHeaderCellDef>Title</mat-header-cell>
+          <mat-cell *cdkCellDef="let item">
+            <p class="text-truncate font-weight-600">{{item.title}}</p>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Buttons Column -->
+        <ng-container cdkColumnDef="buttons">
+          <mat-header-cell *cdkHeaderCellDef></mat-header-cell>
+          <mat-cell *cdkCellDef="let item">
+
+            <div fxFlex="row" fxLayoutAlign="end center">
+
+              <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                      (click)="$event.stopPropagation();">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <mat-menu #moreMenu="matMenu">
+                <button mat-menu-item aria-label="edit" (click)="editItem(item.id)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
+                </button>
+
+                <button mat-menu-item aria-label="remove" (click)="deleteItem(item.id)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Remove</span>
+                </button>
+              </mat-menu>
+            </div>
+
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *cdkRowDef="let item; columns: displayedColumns;" (click)="editItem(item.id)" matRipple
+                 [@animate]="{value:'*',params:{y:'100%'}}"
+                 class="item">
+        </mat-row>
+      </mat-table>
+
+      <mat-paginator [length]="resultsLength" [pageSize]="20" [pageSizeOptions]=[10,20,30]>
+      </mat-paginator>
+    </div>
+    <!-- / CONTENT CARD -->
   </div>
   <!-- / CENTER -->
 </div>

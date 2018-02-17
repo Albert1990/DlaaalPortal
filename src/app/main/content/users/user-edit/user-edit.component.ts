@@ -25,7 +25,6 @@ export class UserEditComponent implements OnInit {
   isEditMode: boolean = false;
   defaultAvatar: string = '../../../../../assets/images/avatars/profile-grey.png';
 
-
   @ViewChild('file') fileSelector: ElementRef;
 
   constructor(private route: ActivatedRoute,
@@ -34,8 +33,6 @@ export class UserEditComponent implements OnInit {
               private loadingScreen: FuseSplashScreenService,
               private helpers: HelpersService) {
     this.user = new User();
-    //   this.user = new User(4,'Kemo','Mano','4460467','http://google.com',0,
-    // 0,false,'samer.shatta@gmail.com','','active');
   }
 
   ngOnInit() {
@@ -47,7 +44,6 @@ export class UserEditComponent implements OnInit {
       id: new FormControl(this.user.id),
       firstName: new FormControl(this.user.firstName, [Validators.required]),
       lastName: new FormControl(this.user.lastName, [Validators.required]),
-      // password: new FormControl(this.user.password, [Validators.required]),
       status: new FormControl(this.user.status),
       avatar: new FormControl(this.user.avatar),
       website: new FormControl(this.user.website, [
@@ -58,8 +54,8 @@ export class UserEditComponent implements OnInit {
         Validators.email, Validators.required
       ]),
     });
-    if (!this.isEditMode) this.userForm.controls.password = new FormControl(this.user.password, [Validators.required]),
-    console.log("this.userForm ", this.userForm);
+    if (!this.isEditMode)
+      this.userForm.controls.password = new FormControl(this.user.password, [Validators.required]);
   }
 
   getErrorMessage(fieldName, required, phone, website, email) {
@@ -71,7 +67,6 @@ export class UserEditComponent implements OnInit {
   }
 
   onSubmit(thisUserForm: NgForm) {
-
     if (thisUserForm.valid) {
       this.loadingScreen.show();
       if (this.isEditMode) {
@@ -83,6 +78,7 @@ export class UserEditComponent implements OnInit {
         }, (reason) => {
           this.loadingScreen.hide();
           console.log('error ', reason);
+          this.helpers.showActionSnackbar(PageAction.Update, false, 'user');
         });
       } else {
         delete this.userForm.value.avatar;
@@ -94,6 +90,8 @@ export class UserEditComponent implements OnInit {
           this.router.navigate(['/users']);
         }, (reason) => {
           this.loadingScreen.hide();
+          // TODO specify the errors to show them
+          this.helpers.showActionSnackbar(PageAction.Create, false, 'user');
           console.log('error ', reason);
         });
       }
