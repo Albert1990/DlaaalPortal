@@ -62,11 +62,11 @@ export class AdvertisementListComponent implements OnInit, OnDestroy {
 
     this.confirmDialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log("item ", item);
+       // console.log("item ", item);
          this.loadingScreen.show();
         this.AdvertisementsService.delete(item).then(
           (serverResult) => {
-            console.log('delete user serverResult! ', serverResult);
+           // console.log('delete user serverResult! ', serverResult);
             this.dataSource.data = this.dataSource.data.filter(item1 => item1 !== item);
              this.loadingScreen.hide();
             // this.dataSource.data = serverResult.users;

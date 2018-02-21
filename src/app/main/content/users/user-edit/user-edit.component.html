@@ -49,6 +49,7 @@
               (click)="f.ngSubmit.emit()">
         <span>SAVE</span>
       </button>
+
     </div>
     <!-- / HEADER -->
 
@@ -134,14 +135,14 @@
 
                 </div>
 
-                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
+               <!-- <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
                   <img *ngIf="userForm.value.avatar && userForm.value.avatar != ''" [src]="userForm.value.avatar">
-                  <!--<img *ngIf="!user.avatar" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png">-->
+                  &lt;!&ndash;<img *ngIf="!user.avatar" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png">&ndash;&gt;
                   <img *ngIf="!userForm.value.avatar || userForm.value.avatar == ''" [src]="defaultAvatar">
                   <input type="file" accept="image/*" #file name="avatar" fxHide (change)="onFileChange($event)">
                   <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
                   <button mat-raised-button color="warn" (click)="removeFile($event)">Remove</button>
-                </div>
+                </div>-->
 
               </div>
 

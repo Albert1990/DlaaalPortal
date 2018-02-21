@@ -87,11 +87,11 @@ export class UserListComponent implements OnInit, OnDestroy {
 
     this.confirmDialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('item ', item);
+       // console.log('item ', item);
         // this.loadingScreen.show();
         this.usersService.delete(item).then(
           (serverResult) => {
-            console.log('delete user serverResult! ', serverResult);
+           // console.log('delete user serverResult! ', serverResult);
             //  this.loadingScreen.hide();
             // this.dataSource.data = serverResult.users;
             // this.resultsLength = serverResult.totalCount;

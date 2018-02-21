@@ -26,7 +26,7 @@ export class CategoriesService {
       this.http.get<Category[]>(AppSettings.baseUrl + '/categories')
         .subscribe(
           items => {
-            console.log('items ', items);
+            // console.log('items ', items);
             this.items = items;
             resolve({
               items: this.items.slice(),
@@ -45,7 +45,7 @@ export class CategoriesService {
       this.http.get<Category>(AppSettings.baseUrl + '/categories/' + itemId)
         .subscribe(
           item => {
-            console.log(item);
+           // console.log(item);
             resolve(item);
           },
           error => {
@@ -61,7 +61,7 @@ export class CategoriesService {
       this.http.delete<Advertisement>(AppSettings.baseUrl + '/categories/' + item.id + '?access_token=' + this.authService.getToken())
         .subscribe(
           data => {
-            console.log(data);
+           // console.log(data);
             // this.items.splice(index, 1);
             resolve(true);
           },
@@ -77,7 +77,7 @@ export class CategoriesService {
       this.http.put(AppSettings.baseUrl + '/categories/' + item.id, item)
         .subscribe(
           data => {
-            console.log(data);
+           // console.log(data);
             resolve(true);
           },
           error => {
@@ -88,12 +88,12 @@ export class CategoriesService {
   }
 
   add(item: Advertisement): Promise<any> {
-    console.log("item ", item);
+   // console.log("item ", item);
     return new Promise((resolve, reject) => {
       this.http.post(AppSettings.baseUrl + '/categories/?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
-            console.log(data);
+           // console.log(data);
             resolve(true);
           },
           error => {

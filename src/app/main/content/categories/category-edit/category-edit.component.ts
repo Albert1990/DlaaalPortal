@@ -46,7 +46,7 @@ export class CategoryEditComponent implements OnInit {
   }
 
   browseProfilePicture() {
-    console.log(this.fileSelector);
+    // console.log(this.fileSelector);
     this.fileSelector.nativeElement.click();
     return false;
   }
@@ -67,7 +67,7 @@ export class CategoryEditComponent implements OnInit {
       // this.loadingScreen.show();
       // this.uploadImages(this.advertForm.value.images);
       if (this.isEditMode) {
-        console.log('this.categoryForm edit', this.categoryForm.value);
+        // console.log('this.categoryForm edit', this.categoryForm.value);
         this.categoriesService.update(this.categoryForm.value).then((val) => {
           this.helpers.showActionSnackbar(PageAction.Update, true, 'categories');
           this.router.navigate(['/categories']);
@@ -79,7 +79,7 @@ export class CategoryEditComponent implements OnInit {
         });
       } else {
         delete this.categoryForm.value.id;
-        console.log('this.categoryForm add', this.categoryForm.value);
+       // console.log('this.categoryForm add', this.categoryForm.value);
         this.categoriesService.add(this.categoryForm.value).then((val) => {
           this.loadingScreen.hide();
           this.helpers.showActionSnackbar(PageAction.Create, true, 'categories');
