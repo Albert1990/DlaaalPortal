@@ -1,0 +1,297 @@
+<div id="product" class="page-layout carded fullwidth" fusePerfectScrollbar>
+
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- HEADER -->
+    <div class="header white-fg" fxLayout="row" fxLayoutAlign="space-between center">
+
+      <!-- APP TITLE -->
+      <div fxLayout="row" fxLayoutAlign="start center">
+
+        <button class="mr-0 mr-sm-16" mat-icon-button [routerLink]="'/advertisements'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <!-- <div class="product-image mr-8 mr-sm-16" *fuseIfOnDom
+              [@animate]="{value:'*',params:{delay:'50ms',scale:'0.2'}}">
+           <img *ngIf="!userForm.value.avatar || userForm.value.avatar == ''" [src]="defaultAvatar">
+           <img *ngIf="userForm.value.avatar && userForm.value.avatar != ''" [src]="userForm.value.avatar">
+         </div>-->
+
+        <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+          <div class="h2" *ngIf="isEditMode">
+            {{advertForm.title}}
+          </div>
+          <div class="h2" *ngIf="!isEditMode">
+            New Advertisement
+          </div>
+          <div class="subtitle secondary-text">
+            <span>Advertisement Details</span>
+          </div>
+        </div>
+      </div>
+      <!-- / APP TITLE -->
+
+      <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              [disabled]="advertForm.status == 'INVALID'
+              || advertForm.controls.images.value.length === 0"
+              (click)="f.ngSubmit.emit()" type="submit">
+        <span>SAVE</span>
+      </button>
+     <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              (click)="uploadImages(advertForm.controls.images.value)">
+        <span>aa</span>
+      </button>-->
+     <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              (click)="printt(advertForm.value)">
+        <span>bb</span>
+      </button>-->
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+
+      <!-- CONTENT -->
+      <div class="content">
+        <form [formGroup]="advertForm"  novalidate (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
+          <mat-tab-group>
+
+            <mat-tab label="Basic Info">
+
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">web</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput formControlName="title" name="title" placeholder="Title"
+                             required>
+                      <mat-error *ngIf="advertForm.controls.title.invalid">{{getErrorMessage('title','required','')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">attach_money</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="price" type="number" min="0" formControlName="price"
+                             placeholder="Price" required>
+                      <mat-error *ngIf="advertForm.controls.price.invalid">{{getErrorMessage('price','required','',
+                        'min')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">call</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input type="text" formControlName="phone" matInput name="phone"
+                             placeholder="Phone">
+                      <mat-error *ngIf="advertForm.controls.phone.invalid">{{getErrorMessage('phone','', 'pattern',
+                        '')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">remove_red_eye</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="viewsCount" type="number" placeholder="Views Count" min="0"
+                             formControlName="viewsCount">
+                      <mat-error *ngIf="advertForm.controls.viewsCount.invalid">{{getErrorMessage('viewsCount','', '',
+                        'min')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="Status" name="status" ([value])="status" formControlName="status">
+                        <mat-option value="active">Active</mat-option>
+                        <mat-option value="closed">Closed</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">description</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <textarea matInput name="description" rows="4" formControlName="description"
+                                placeholder="Description" required></textarea>
+                      <mat-error *ngIf="advertForm.controls.description.invalid">
+                        {{getErrorMessage('description','required','', '')}}
+                      </mat-error>
+                    </mat-form-field>
+
+                  </div>
+
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Images*">
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <image-upload
+                    [uploadedFiles]="advertForm.controls.images.value" required max="20"
+                    (uploadFinished)="onUploadFinished($event)"
+                    (removed)="onRemoved($event)"
+                  ></image-upload>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Other Info">
+
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-checkbox formControlName="isBookmarked" name="isBookmarked">Is Bookmarked</mat-checkbox>
+                  </div>
+
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">place</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput name="address" placeholder="Address" formControlName="address">
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">date_range</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput [matDatepicker]="picker" name="createdAt" placeholder="Created At"
+                             formControlName="createdAt">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="Owner" [(value)]="ownerId" name="ownerId"
+                                  formControlName="ownerId">
+                        <mat-option value="null">None</mat-option>
+                        <mat-option *ngFor="let owner of users" [value]="owner.id">{{owner.firstName}}
+                          {{owner.lastName}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">location_city</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="City" [(value)]="cityId" name="cityId"
+                                  formControlName="cityId">
+                        <mat-option value="null">None</mat-option>
+                        <mat-option *ngFor="let city of cities" [value]="city.id">{{city.name}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="categories" fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">group_work</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="Category" [(value)]="categoryId" name="categoryId"
+                                  formControlName="categoryId">
+                        <mat-option value="null" (click)="setSelectedCategory(null)">None</mat-option>
+                        <mat-option *ngFor="let category of categories" [value]="category.id"
+                                    (click)="setSelectedCategory(category)">
+                          <!--<img [src]="category.image" [alt]="category.image">-->
+                          {{category.title}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div fxLayout="row" fxLayoutAlign="start start" *ngIf="advert.category && advert.category!==null">
+                    <mat-icon class="mr-12 mt-12">group_work</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <mat-select placeholder="Sub Category" [(value)]="subCategoryId"
+                                  name="subCategoryId"
+                                  formControlName="subCategoryId">
+                        <mat-option value="null" (click)="setSelectedSubCategory(null)">None</mat-option>
+                        <mat-option *ngFor="let subCategory of advert.category.subCategories" [value]="subCategory.id"
+                                    (click)="setSelectedSubCategory(subCategory)">
+                          {{subCategory.title}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <mat-card *ngIf="advertForm.value.subCategoryId">
+                    <mat-card-header>
+                      <mat-card-title><h3>Sub-Category Fields</h3></mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div *ngIf="advert.subCategory !== null" formArrayName="fields">
+                        <div *ngFor="let field of advertForm.controls.fields.controls; let i = index">
+                          <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start start">
+                            <mat-form-field class="w-100-p" >
+                              <input matInput name="fieldkey" placeholder="Field Key" formControlName="key">
+                            </mat-form-field>
+                            <mat-form-field class="w-100-p" >
+                              <input matInput name="fieldkey" placeholder="Field Value" formControlName="value">
+                            </mat-form-field>
+                            <div fxLayout="column">
+                              <mat-form-field class="w-100-p" >
+                                <mat-select placeholder="Field Type" name="fieldtype" formControlName="type"
+                                            ([value])="type"
+                                            (change)="selectFieldType(field.controls.type.value, field, i)">
+                                  <mat-option value="text">Text</mat-option>
+                                  <mat-option value="number">Number</mat-option>
+                                  <mat-option value="choose">Select</mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                              <div  *ngIf="field.controls.type.value === 'choose' && field.controls.values" fxLayout="column"
+                                    formArrayName="values">
+                                <div  *ngFor="let vv of field.controls.values.controls; let j = index ">
+                                  <div fxLayout="row">
+                                    <mat-form-field class="w-100-p">
+                                      <input matInput name="fieldvalue" placeholder="Value" [formControlName]="j">
+                                    </mat-form-field>
+                                    <button mat-icon-button color="warn" (click)="removeValue(i, j)">
+                                      <mat-icon aria-label="remove">close</mat-icon>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <!--<button mat-icon-button color="accent" (click)="addValue(i)">-->
+                                <mat-icon aria-label="addd" (click)="addValue(i)">add</mat-icon>
+                                <!--</button>-->
+                              </div>
+                            </div>
+                            <button mat-icon-button color="warn" (click)="removeField(i)">
+                              <mat-icon aria-label="remove">close</mat-icon>
+                            </button>
+                          </div>
+
+                        </div>
+                      </div>
+                      <mat-icon aria-label="addd" (click)="addField()">add</mat-icon>
+                     <!-- <button mat-icon-button color="accent" (click)="addField()">
+                        <mat-icon aria-label="addd">close</mat-icon>Add Field
+                      </button>-->
+                    </mat-card-content>
+                  </mat-card>
+
+
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </form>
+
+        <!--<pre> {{advertForm.value | json}} </pre>-->
+        <!-- / CONTENT -->
+
+      </div>
+      <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+  </div>
+</div>

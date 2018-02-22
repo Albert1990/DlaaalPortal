@@ -15,6 +15,10 @@ import { FuseQuickPanelComponent } from './quick-panel/quick-panel.component';
 import { FuseThemeOptionsComponent } from '../core/components/theme-options/theme-options.component';
 import { FuseShortcutsModule } from '../core/components/shortcuts/shortcuts.module';
 import { FuseSearchBarModule } from '../core/components/search-bar/search-bar.module';
+/*import { AdvertisementsComponent } from './content/advertisements/advertisements.component';
+import { AdvertisementListComponent } from './content/advertisements/advertisement-list/advertisement-list.component';
+import { AdvertisementDetailsComponent } from './content/advertisements/advertisement-details/advertisement-details.component';
+import { AdvertisementEditComponent } from './content/advertisements/advertisement-edit/advertisement-edit.component';*/
 
 @NgModule({
     declarations: [
@@ -26,7 +30,11 @@ import { FuseSearchBarModule } from '../core/components/search-bar/search-bar.mo
         FuseToolbarComponent,
         FuseNavbarVerticalToggleDirective,
         FuseThemeOptionsComponent,
-        FuseQuickPanelComponent
+        FuseQuickPanelComponent,
+      /*  AdvertisementsComponent,
+        AdvertisementListComponent,
+        AdvertisementDetailsComponent,
+        AdvertisementEditComponent*/
     ],
     imports     : [
         SharedModule,

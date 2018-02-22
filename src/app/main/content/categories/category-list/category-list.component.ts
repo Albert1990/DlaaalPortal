@@ -38,6 +38,13 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     private loadingScreen: FuseSplashScreenService) {
   }
 
+  routeTo(item, to: string) {
+    if (to === 'delete')
+      this.deleteItem(item);
+    else
+      this.router.navigate(['/categories', item.id, to]);
+  }
+
   ngOnInit() {
     this.dataSource = new MatTableDataSource<Category>();
     const serverResult = this.activatedRoute.snapshot.data['serverResult'];
@@ -60,35 +67,29 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/categories', itemId, 'edit']);
   }
 
-  applyFilter(startedWith: string) {
-    if (startedWith.length >= 2) {
-      this.startedWith = startedWith;
-      this.paginator.pageIndex = 0;
-      this.categoriesService.listing(this.paginator.pageIndex,
-        this.paginator.pageSize,
-        startedWith).then(serverResult => {
-          console.log(serverResult);
-        }).catch(reason => {
-          console.log('error while filtering data');
-        });
-    }
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
   }
 
-  deleteItem(itemId: string) {
+
+  deleteItem(item) {
     this.confirmDialogRef = this.dialog.open(FuseConfirmDialogComponent, {
       disableClose: false
     });
 
-    this.confirmDialogRef.componentInstance.confirmMessage = 'Are you sure you want to delete?';
+    this.confirmDialogRef.componentInstance.confirmMessage = 'Are you sure you want to delete the category?';
 
     this.confirmDialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadingScreen.show();
-        this.categoriesService.delete(itemId).then(
+        this.categoriesService.delete(item).then(
           (serverResult) => {
-            this.loadingScreen.hide();
-            this.dataSource.data = serverResult.users;
-            this.resultsLength = serverResult.totalCount;
+            this.dataSource.data = this.dataSource.data.filter(item1 => item1 !== item);
+             this.loadingScreen.hide();
+            /*this.dataSource.data = serverResult.users;
+            this.resultsLength = serverResult.totalCount;*/
           },
           (reason) => {
             this.loadingScreen.hide();

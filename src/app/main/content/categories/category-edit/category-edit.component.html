@@ -1,3 +1,79 @@
-<p>
-  category-edit works!
-</p>
+<div id="product" class="page-layout carded fullwidth" fusePerfectScrollbar>
+
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- HEADER -->
+    <div class="header white-fg" fxLayout="row" fxLayoutAlign="space-between center">
+
+      <!-- APP TITLE -->
+      <div fxLayout="row" fxLayoutAlign="start center">
+
+        <button class="mr-0 mr-sm-16" mat-icon-button [routerLink]="'/categories'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+          <div class="h2" *ngIf="isEditMode">
+            {{categoryForm.title}}
+          </div>
+          <div class="h2" *ngIf="!isEditMode">
+            New Category
+          </div>
+          <div class="subtitle secondary-text">
+            <span>Category Details</span>
+          </div>
+        </div>
+      </div>
+      <!-- / APP TITLE -->
+
+      <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              [disabled]="categoryForm.status == 'INVALID'"
+              (click)="f.ngSubmit.emit()">
+        <span>SAVE</span>
+      </button>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+
+      <!-- CONTENT -->
+      <div class="content">
+        <form (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
+          <mat-tab-group>
+
+            <mat-tab label="Basic Info">
+
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">group_work</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput [formControl]="categoryForm.controls.title" name="title" placeholder="Title"
+                             required>
+                      <mat-error *ngIf="categoryForm.controls.title.invalid">{{getErrorMessage('title','required','')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
+                  <img *ngIf="categoryForm.value.image && categoryForm.value.image != ''" [src]="categoryForm.value.image">
+                  <img *ngIf="!categoryForm.value.image || categoryForm.value.image == ''" [src]="defaultImage">
+                  <input type="file" accept="image/*" #file name="image" fxHide (change)="onFileChange($event)">
+                  <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
+                  <button mat-raised-button color="warn" (click)="removeFile($event)">Remove</button>
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
