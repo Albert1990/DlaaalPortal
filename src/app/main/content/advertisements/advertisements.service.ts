@@ -1,21 +1,19 @@
-import {AppSettings} from './../shared/app.settings';
-import {Category} from './category.model';
-import {AuthService} from './../auth/auth.service';
-import {HelpersService} from './../shared/helpers.service';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import { Injectable } from '@angular/core';
+import {Advertisement} from './advertisement.model';
+import {AuthService} from '../auth/auth.service';
+import {HttpClient} from '@angular/common/http';
 import {AppException} from '../shared/app.exception';
-import {Advertisement} from '../advertisements/advertisement.model';
+import {Subject} from 'rxjs/Subject';
+import {AppSettings} from '../shared/app.settings';
+import { HttpHeaders } from '@angular/common/http';
+// import { RequestOptions } from '@angular/http';
 
 @Injectable()
-export class CategoriesService {
-  private items: Category[] = [];
+export class AdvertisementsService {
+
+  private items: Advertisement[] = [];
   // onUsersChanged: BehaviorSubject<any> = new BehaviorSubject({});
-  onSearchTextChanged: Subject<any> = new Subject();
+  // onSearchTextChanged: Subject<any> = new Subject();
 
   constructor(private http: HttpClient,
               private authService: AuthService) {
@@ -23,10 +21,10 @@ export class CategoriesService {
 
   listing(pageIndex = 0, pageSize = 30, startedWith: string = ''): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.http.get<Category[]>(AppSettings.baseUrl + '/categories')
+      this.http.get<Advertisement[]>(AppSettings.baseUrl + '/advertisemets?access_token=' + this.authService.getToken())
         .subscribe(
           items => {
-            console.log('items ', items);
+            console.log(items);
             this.items = items;
             resolve({
               items: this.items.slice(),
@@ -41,8 +39,10 @@ export class CategoriesService {
   }
 
   item(itemId: string): Promise<any> {
+    console.log("itemId ", itemId);
     return new Promise((resolve, reject) => {
-      this.http.get<Category>(AppSettings.baseUrl + '/categories/' + itemId)
+      // send get request
+      this.http.get<Advertisement>(AppSettings.baseUrl + '/advertisemets/' + itemId)
         .subscribe(
           item => {
             console.log(item);
@@ -58,12 +58,11 @@ export class CategoriesService {
   delete(item): Promise<any> {
     return new Promise((resolve, reject) => {
       const index = this.items.indexOf(item);
-      console.log("item ", item);
-      console.log("index ", index);
-      this.http.delete<Advertisement>(AppSettings.baseUrl + '/categories/' + item.id + '?access_token=' + this.authService.getToken())
+      this.http.delete<Advertisement>(AppSettings.baseUrl + '/advertisemets/' + item.id + '?access_token=' + this.authService.getToken())
         .subscribe(
           data => {
             console.log(data);
+            // this.items[index].status = 'deactivated';
             this.items.splice(index, 1);
             resolve(true);
           },
@@ -71,12 +70,14 @@ export class CategoriesService {
             reject(new AppException(error));
           }
         );
+      // resolve(this.items);
     });
   }
 
-  update(item: Category): Promise<any> {
+
+  update(item: Advertisement): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.http.put(AppSettings.baseUrl + '/categories/' + item.id, item)
+      this.http.patch(AppSettings.baseUrl + '/advertisemets/' + item.id + '?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
             console.log(data);
@@ -92,7 +93,7 @@ export class CategoriesService {
   add(item: Advertisement): Promise<any> {
     console.log("item ", item);
     return new Promise((resolve, reject) => {
-      this.http.post(AppSettings.baseUrl + '/categories/?access_token=' + this.authService.getToken(), item)
+      this.http.post(AppSettings.baseUrl + '/advertisemets/?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
             console.log(data);
@@ -104,7 +105,6 @@ export class CategoriesService {
         );
     });
   }
-
   uploadImages(items): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log("items ", items);
@@ -121,5 +121,7 @@ export class CategoriesService {
         );
     });
   }
+
+
 
 }

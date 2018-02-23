@@ -34,6 +34,11 @@
 
     .tab-content {
       flex: 1 1 auto;
+      .product-image{
+        width: 200px;
+        max-width: 200px;
+        min-width: 200px;
+      }
 
       &.products {
 

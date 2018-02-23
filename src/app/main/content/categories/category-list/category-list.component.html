@@ -97,7 +97,7 @@
                   <span>Edit</span>
                 </button>
 
-                <button mat-menu-item aria-label="remove" (click)="deleteItem(item.id)">
+                <button mat-menu-item aria-label="remove" (click)="deleteItem(item)">
                   <mat-icon>delete</mat-icon>
                   <span>Remove</span>
                 </button>
@@ -108,7 +108,7 @@
         </ng-container>
 
         <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *cdkRowDef="let item; columns: displayedColumns;" (click)="editItem(item.id)" matRipple
+        <mat-row *cdkRowDef="let item; columns: displayedColumns;" (click)="itemDetails(item.id)" matRipple
                  [@animate]="{value:'*',params:{y:'100%'}}"
                  class="item">
         </mat-row>

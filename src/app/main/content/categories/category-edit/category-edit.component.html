@@ -45,29 +45,26 @@
 
       <!-- CONTENT -->
       <div class="content">
-        <form (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
+        <form [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
           <mat-tab-group>
-
             <mat-tab label="Basic Info">
-
               <div fxLayout="row" fxLayout.xs="column">
-                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="70%">
                   <div fxLayout="row" fxLayoutAlign="start start">
                     <mat-icon class="mr-12 mt-12">group_work</mat-icon>
                     <mat-form-field class="w-100-p">
-                      <input matInput [formControl]="categoryForm.controls.title" name="title" placeholder="Title"
-                             required>
+                      <input type="text" matInput formControlName="title" name="title" placeholder="Title" required>
                       <mat-error *ngIf="categoryForm.controls.title.invalid">{{getErrorMessage('title','required','')}}
                       </mat-error>
                     </mat-form-field>
                   </div>
                 </div>
                 <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
-                  <img *ngIf="categoryForm.value.image && categoryForm.value.image != ''" [src]="categoryForm.value.image">
-                  <img *ngIf="!categoryForm.value.image || categoryForm.value.image == ''" [src]="defaultImage">
+                  <img *ngIf="photo != ''" [src]="photo" >
+                  <img *ngIf="photo == ''" [src]="defaultImage">
                   <input type="file" accept="image/*" #file name="image" fxHide (change)="onFileChange($event)">
-                  <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
-                  <button mat-raised-button color="warn" (click)="removeFile($event)">Remove</button>
+                  <button type="button" mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
+                  <button type="button" mat-raised-button color="warn" (click)="removeFile()">Remove</button>
                 </div>
               </div>
             </mat-tab>

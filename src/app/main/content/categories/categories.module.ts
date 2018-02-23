@@ -7,6 +7,8 @@ import { CategoryListComponent } from './category-list/category-list.component';
 import { CategoryDetailComponent } from './category-detail/category-detail.component';
 import { CategoryEditComponent } from './category-edit/category-edit.component';
 import { CategoryResolver } from './category.resolver';
+import {AdvertisementResolver} from '../advertisements/advertisement.resolver';
+import {AdvertisementDetailsComponent} from '../advertisements/advertisement-details/advertisement-details.component';
 
 const routes: Routes = [
   {
@@ -36,7 +38,17 @@ const routes: Routes = [
           resolverType: 'item',
           isEditMode: true
         }
-      }
+      },
+      {
+        path: ':id/details',
+        component: CategoryDetailComponent,
+        resolve: {
+          serverResult: CategoryResolver
+        },
+        data: {
+          resolverType: 'item',
+        }
+      },
     ]
   }
 ];
