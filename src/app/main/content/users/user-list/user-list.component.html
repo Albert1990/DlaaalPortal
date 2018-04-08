@@ -61,9 +61,10 @@
 
         <!-- Id Column -->
         <ng-container cdkColumnDef="id">
-          <mat-header-cell *cdkHeaderCellDef fxHide fxShow.gt-sm>ID</mat-header-cell>
-          <mat-cell *cdkCellDef="let item" fxHide fxShow.gt-sm>
-            <p>{{item.id}}</p>
+          <mat-header-cell *cdkHeaderCellDef fxHide fxShow.gt-sm fxFlex="10%">ID</mat-header-cell>
+          <mat-cell *cdkCellDef="let item" fxHide fxShow.gt-sm fxFlex="10%" fxLayout="column" fxLayoutAlign="start start">
+            <p class=" text-truncate mat-caption m-0">{{item.id.slice(0, 10)}}</p>
+            <p class="text-truncate  mat-caption m-0">{{item.id.slice(10,20)}}</p>
           </mat-cell>
         </ng-container>
 
@@ -82,7 +83,9 @@
         <ng-container cdkColumnDef="name">
           <mat-header-cell *cdkHeaderCellDef>Name</mat-header-cell>
           <mat-cell *cdkCellDef="let item">
-            <p class="text-truncate font-weight-600">{{item.firstName + ' '+ item.lastName}}</p>
+            <p class="text-truncate font-weight-600">{{item.firstName }}
+              <!--+ ' '+ item.lastName}}-->
+            </p>
           </mat-cell>
         </ng-container>
 
@@ -133,8 +136,8 @@
                   <span>Edit</span>
                 </button>
 
-                <button mat-menu-item aria-label="remove"  (click)="routeTo(item, 'delete')" class>
-                  <mat-icon>delete</mat-icon>
+                <button mat-menu-item aria-label="remove" [disabled]="item.status != 'active'"  (click)="routeTo(item, 'delete')" >
+                  <mat-icon color="warn">delete</mat-icon>
                   <span>Deactivate</span>
                 </button>
               </mat-menu>

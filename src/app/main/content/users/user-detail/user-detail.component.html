@@ -27,7 +27,8 @@
         <div fxLayout="column" fxLayoutAlign="start start"
              *fuseIfOnDom [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
           <div class="h2">
-            {{user.firstName}} {{user.lastName}}
+            {{user.firstName}}
+            <!--{{user.lastName}}-->
           </div>
 
         </div>
@@ -60,7 +61,9 @@
                       <div fxLayout="row" fxLayoutAlign="space-between stretch">
                         <div class="client">
                           <div class="invoice-number" fxLayout="row" fxLayoutAlign="start center">
-                            <span class="mat-headline">{{user.firstName}} {{user.lastName}}</span>
+                            <span class="mat-headline">{{user.firstName}}
+                              <!--{{user.lastName}}-->
+                            </span>
                             <mat-icon *ngIf="user.status==='active'" class="mb-12 ml-4 green">check_circle</mat-icon>
                             <mat-icon *ngIf="user.status==='pending'" class="mb-12 ml-4 red">highlight_off</mat-icon>
                           </div>
@@ -68,15 +71,15 @@
                           <div class="info">
                             <div class="phone">{{user.phone}}</div>
                             <div class="email">{{user.email}}</div>
-                            <div class="address">{{user.website}}</div>
+                            <!--<div class="address">{{user.website}}</div>-->
                           </div>
                           <mat-divider></mat-divider>
                           <br/>
                           <div class="info">
-                            <div>Followed
+                           <!-- <div>Followed
                               <mat-icon *ngIf="user.isFollowed==true" class=" green">check_circle</mat-icon>
                               <mat-icon *ngIf="user.isFollowed==false" class=" red">highlight_off</mat-icon>
-                            </div>
+                            </div>-->
                             <div *ngIf="user.isFollowed==true">Following Count <span class="number">{{user.followersCount}}</span>
                             </div>
                             <div>Advertisement Count <span class="number">{{user.advertisementCount}} </span></div>

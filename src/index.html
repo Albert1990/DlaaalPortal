@@ -4,8 +4,8 @@
     <head>
 
         <title>Dlaaal</title>
-        <base href="/">
-
+        <!--<base href="/">-->
+      <script>document.write('<base href="' + document.location + '" />');</script>
         <meta charset="utf-8">
         <meta name="description" content="Dlaaal admin portal with pre-built apps and pages">
         <meta name="keywords" content="HTML,CSS,AngularJS,Angular,Angular 4,Angular 5,Angular 6,Material">
@@ -179,6 +179,18 @@
             }
         </style>
         <!-- / FUSE Splash Screen CSS -->
+        <!--Snackbar styles-->
+        <style>
+          snack-bar-container.success-snackbar {
+            /*background-color: #539855;*/
+            border: #539855 2px solid;
+          }
+          snack-bar-container.failed-snackbar {
+            border: rgba(249, 5, 19, 0.74) 2px solid;
+            /*background-color: rgba(249, 5, 19, 0.74);*/
+          }
+        </style>
+      <!--Snackbar styles-->
     </head>
 
     <body class="primary-800-bg">

@@ -4,21 +4,22 @@ import {AuthService} from './../auth/auth.service';
 import {HelpersService} from './../shared/helpers.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {AppException} from '../shared/app.exception';
-import {Advertisement} from '../advertisements/advertisement.model';
+import {Advertisement} from '../lazy-child/advertisement.model';
 
 @Injectable()
 export class CategoriesService {
   private items: Category[] = [];
   // onUsersChanged: BehaviorSubject<any> = new BehaviorSubject({});
-  onSearchTextChanged: Subject<any> = new Subject();
+  // onSearchTextChanged: Subject<any> = new Subject();
 
   constructor(private http: HttpClient,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private helpers: HelpersService) {
   }
 
   listing(pageIndex = 0, pageSize = 30, startedWith: string = ''): Promise<any> {
@@ -26,7 +27,6 @@ export class CategoriesService {
       this.http.get<Category[]>(AppSettings.baseUrl + '/categories')
         .subscribe(
           items => {
-            // console.log('items ', items);
             this.items = items;
             resolve({
               items: this.items.slice(),
@@ -35,6 +35,7 @@ export class CategoriesService {
           },
           error => {
             console.log(error);
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
           }
         );
     });
@@ -45,10 +46,10 @@ export class CategoriesService {
       this.http.get<Category>(AppSettings.baseUrl + '/categories/' + itemId)
         .subscribe(
           item => {
-           // console.log(item);
             resolve(item);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException('unknown exception'));
           }
         );
@@ -61,11 +62,11 @@ export class CategoriesService {
       this.http.delete<Advertisement>(AppSettings.baseUrl + '/categories/' + item.id + '?access_token=' + this.authService.getToken())
         .subscribe(
           data => {
-           // console.log(data);
-            // this.items.splice(index, 1);
+            this.items.splice(index, 1);
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );
@@ -74,13 +75,13 @@ export class CategoriesService {
 
   update(item: Category): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.http.put(AppSettings.baseUrl + '/categories/' + item.id, item)
+      this.http.patch(AppSettings.baseUrl + '/categories/' + item.id +  '?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
-           // console.log(data);
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );
@@ -88,15 +89,30 @@ export class CategoriesService {
   }
 
   add(item: Advertisement): Promise<any> {
-   // console.log("item ", item);
     return new Promise((resolve, reject) => {
       this.http.post(AppSettings.baseUrl + '/categories/?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
-           // console.log(data);
+            console.log(data);
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
+            reject(new AppException(error));
+          }
+        );
+    });
+  }
+
+  uploadImages(items): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.post(AppSettings.baseUrl + '/files/images/upload?access_token=' + this.authService.getToken(), items)
+        .subscribe(
+          data => {
+            resolve(data);
+          },
+          error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );

@@ -17,18 +17,20 @@ import {FuseSampleModule} from './main/content/sample/sample.module';
 import {TranslateModule} from '@ngx-translate/core';
 import {HelpersService} from './main/content/shared/helpers.service';
 import {AuthService} from './main/content/auth/auth.service';
-import {AdvertisementsModule} from './main/content/advertisements/advertisements.module';
+// import {AdvertisementsModule} from './main/content/advertisements/advertisements.module';
 
 const appRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: './main/content/dashboard/dashboard.module#DashboardModule',
+    redirectTo : 'advertisements',
+    // loadChildren: './main/content/dashboard/dashboard.module#DashboardModule',
     canLoad: [AuthGuardService]
   },
   {
     path: 'home',
-    loadChildren: './main/content/dashboard/dashboard.module#DashboardModule',
+    redirectTo : 'advertisements',
+    // loadChildren: './main/content/dashboard/dashboard.module#DashboardModule',
     canLoad: [AuthGuardService]
   },
   {
@@ -42,19 +44,35 @@ const appRoutes: Routes = [
     //loadChildren: './main/content/adverts/adverts.module#AdvertsModule',
     canLoad: [AuthGuardService]
   },*/
-  {
+ /* {
     path: 'advertisements',
     loadChildren: () => AdvertisementsModule,
+    // loadChildren: './main/content/advertisements/advertisements.module#AdvertisementsModule',
     canLoad: [AuthGuardService]
-  },
+  },*/
+ /* {
+    path: 'adverts',
+    loadChildren: './main/content/adverts/adverts.module#AdvertsModule',
+    // canLoad: [AuthGuardService]
+  },*/
   {
     path: 'categories',
     loadChildren: './main/content/categories/categories.module#CategoriesModule',
     canLoad: [AuthGuardService]
   },
   {
+    path: 'advertisements',
+    loadChildren: './main/content/lazy-child/lazy-child.module#LazyModule',
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'countries',
     loadChildren: './main/content/countries/countries.module#CountriesModule',
+    canLoad: [AuthGuardService]
+  },
+  {
+    path: 'cities',
+    loadChildren: './main/content/cities/cities.module#CitiesModule',
     canLoad: [AuthGuardService]
   },
   {
@@ -64,7 +82,7 @@ const appRoutes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'sample'
+    redirectTo: 'users'
   }
 ];
 
@@ -77,7 +95,7 @@ const appRoutes: Routes = [
     HttpModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, { useHash: true }),
     SharedModule,
     TranslateModule.forRoot(),
     FuseMainModule,

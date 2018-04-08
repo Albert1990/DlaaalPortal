@@ -1,3 +1,4 @@
+/*
 import { UserStatus } from './../enums/user-status';
 import { Pipe, PipeTransform } from '@angular/core';
 
@@ -11,3 +12,4 @@ export class UserStatusToBoolPipe implements PipeTransform {
   }
 
 }
+*/

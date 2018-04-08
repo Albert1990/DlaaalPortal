@@ -14,10 +14,11 @@ import {AppException} from '../shared/app.exception';
 export class UsersService {
   private items: User[] = [];
   // onUsersChanged: BehaviorSubject<any> = new BehaviorSubject({});
-  onSearchTextChanged: Subject<any> = new Subject();
+  // onSearchTextChanged: Subject<any> = new Subject();
 
   constructor(private http: HttpClient,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private helpers: HelpersService) {
   }
 
   listing(pageIndex = 0, pageSize = 30, startedWith: string = ''): Promise<any> {
@@ -25,7 +26,7 @@ export class UsersService {
       this.http.get<User[]>(AppSettings.baseUrl + '/users?access_token=' + this.authService.getToken())
         .subscribe(
           items => {
-            console.log(items);
+            console.log('items ', items);
             this.items = items;
             resolve({
               items: this.items.slice(),
@@ -34,6 +35,7 @@ export class UsersService {
           },
           error => {
             console.log(error);
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
           }
         );
     });
@@ -45,10 +47,10 @@ export class UsersService {
       this.http.get<User>(AppSettings.baseUrl + '/users/' + itemId)
         .subscribe(
           item => {
-            console.log(item);
             resolve(item);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException('unknown exception'));
           }
         );
@@ -57,37 +59,31 @@ export class UsersService {
 
   delete(item): Promise<any> {
     return new Promise((resolve, reject) => {
-       const index = this.items.indexOf(item);
-
-      // this.items.splice(index, 1);
-      this.http.put<User>(AppSettings.baseUrl + '/users/' + item.id + '/deactivate?access_token=' + this.authService.getToken(),null)
+      const index = this.items.indexOf(item);
+      this.http.put<User>(AppSettings.baseUrl + '/users/' + item.id + '/deactivate?access_token=' + this.authService.getToken(), null)
         .subscribe(
           data => {
-            console.log(data);
             this.items[index].status = 'deactivated';
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );
-      // resolve(this.items);
     });
   }
 
 
   update(item: User): Promise<any> {
     return new Promise((resolve, reject) => {
-      // send put request to update the user
-      // if the update success return the local modified list into the resolver
-      // update the local users data with the modified user data
       this.http.patch(AppSettings.baseUrl + '/users/' + item.id + '?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
-            console.log(data);
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );
@@ -95,11 +91,7 @@ export class UsersService {
   }
 
   add(item: User): Promise<any> {
-    console.log("item ", item);
     return new Promise((resolve, reject) => {
-      // send put request to add the user
-      // if the add success return the local modified list into the resolver
-      // update the local users data with the added user data
       this.http.post(AppSettings.baseUrl + '/users/?access_token=' + this.authService.getToken(), item)
         .subscribe(
           data => {
@@ -107,6 +99,7 @@ export class UsersService {
             resolve(true);
           },
           error => {
+            this.helpers.showActionSnackbar(null, false, '', {style: 'failed-snackbar'});
             reject(new AppException(error));
           }
         );

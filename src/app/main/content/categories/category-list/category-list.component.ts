@@ -38,12 +38,12 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     private loadingScreen: FuseSplashScreenService) {
   }
 
-  routeTo(item, to: string) {
+  /*routeTo(item, to: string) {
     if (to === 'delete')
       this.deleteItem(item);
     else
       this.router.navigate(['/categories', item.id, to]);
-  }
+  }*/
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<Category>();
@@ -66,6 +66,9 @@ export class CategoryListComponent implements OnInit, OnDestroy {
   editItem(itemId: string) {
     this.router.navigate(['/categories', itemId, 'edit']);
   }
+  itemDetails(itemId: string) {
+    this.router.navigate(['/categories', itemId, 'details']);
+  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
@@ -86,6 +89,7 @@ export class CategoryListComponent implements OnInit, OnDestroy {
         this.loadingScreen.show();
         this.categoriesService.delete(item).then(
           (serverResult) => {
+            console.log("serverResult ", serverResult);
             this.dataSource.data = this.dataSource.data.filter(item1 => item1 !== item);
              this.loadingScreen.hide();
             /*this.dataSource.data = serverResult.users;

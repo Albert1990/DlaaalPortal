@@ -43,12 +43,12 @@ export class UserEditComponent implements OnInit {
     this.userForm = new FormGroup({
       id: new FormControl(this.user.id),
       firstName: new FormControl(this.user.firstName, [Validators.required]),
-      lastName: new FormControl(this.user.lastName, [Validators.required]),
+     // lastName: new FormControl(this.user.lastName, [Validators.required]),
       status: new FormControl(this.user.status),
       avatar: new FormControl(this.user.avatar),
-      website: new FormControl(this.user.website, [
+     /* website: new FormControl(this.user.website, [
         Validators.pattern('[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)')
-      ]),
+      ]),*/
       phone: new FormControl(this.user.phone, [Validators.required, Validators.pattern('^[+]?[0-9]*\\.?[0-9]*')]),
       email: new FormControl(this.user.email, [
         Validators.email, Validators.required

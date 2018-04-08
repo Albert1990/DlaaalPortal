@@ -4,12 +4,14 @@ import {User} from './../users/user.model';
 import {HttpClient, HttpHeaders, HttpRequest} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AppSettings} from '../shared/app.settings';
+import {Router} from '@angular/router';
 
 @Injectable()
 export class AuthService {
   me: User = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private router: Router) {
     //check if the user exists in the local storage
     //if yes => fetch it
     const meStr = localStorage.getItem('me');

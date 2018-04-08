@@ -8,7 +8,7 @@ export class HelpersService {
   constructor(private snackBar: MatSnackBar) {
   }
 
-  showActionSnackbar(pageAction: PageAction, pageActionResult: boolean, resourceType: string, config: any = null) {
+  showActionSnackbar(pageAction: PageAction, pageActionResult: boolean, resourceType: string, config: any = {style : 'success-snackbar'}) {
     console.log("pageAction ", pageAction);
     console.log("pageActionResult ", pageActionResult);
     let message: string = '';
@@ -31,10 +31,14 @@ export class HelpersService {
         else
           message = 'An error happened while updating the selected ' + resourceType;
         break;
+      default :
+        if (!pageActionResult)
+          message = 'A technical exception happened, please try again later or call the technical support';
     }
+
     this.snackBar.open(message, '', {
-      duration: 2000,
-      extraClasses: 'color:green'
+      duration: 5000,
+      extraClasses: [config.style]
     });
   }
 }

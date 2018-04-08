@@ -38,12 +38,12 @@ export class LoginComponent implements OnInit {
     const password = form.value.password;
     this.authService.login(email, password).then(
       user => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/advertisements']);
       }
     ).catch((reason: AppException) => {
       this.snackBar.open(reason.errorMessage, '', {
         duration: 2000,
-        extraClasses: 'color:red'
+        extraClasses: ['failed-snackbar']
       });
     });
   }

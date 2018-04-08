@@ -20,7 +20,7 @@
         <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom
              [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
           <div class="h2" *ngIf="isEditMode">
-            {{categoryForm.title}}
+            {{categoryForm.value.title}}
           </div>
           <div class="h2" *ngIf="!isEditMode">
             New Category
@@ -33,10 +33,15 @@
       <!-- / APP TITLE -->
 
       <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
-              [disabled]="categoryForm.status == 'INVALID'"
+              [disabled]="categoryForm.status == 'INVALID' || tabIndex==2"
               (click)="f.ngSubmit.emit()">
         <span>SAVE</span>
       </button>
+
+      <!--<button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              (click)="printt(categoryForm)">
+        <span>ss</span>
+      </button>-->
     </div>
     <!-- / HEADER -->
 
@@ -45,29 +50,398 @@
 
       <!-- CONTENT -->
       <div class="content">
-        <form (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
-          <mat-tab-group>
-
+        <form [formGroup]="categoryForm" novalidate (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p"
+              fxLayout="column" fxFlex>
+          <mat-tab-group (selectedTabChange)="tabChanged($event)">
             <mat-tab label="Basic Info">
-
               <div fxLayout="row" fxLayout.xs="column">
-                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="70%">
                   <div fxLayout="row" fxLayoutAlign="start start">
                     <mat-icon class="mr-12 mt-12">group_work</mat-icon>
                     <mat-form-field class="w-100-p">
-                      <input matInput [formControl]="categoryForm.controls.title" name="title" placeholder="Title"
-                             required>
+                      <input type="text" matInput formControlName="title" name="title" placeholder="Title" required>
                       <mat-error *ngIf="categoryForm.controls.title.invalid">{{getErrorMessage('title','required','')}}
                       </mat-error>
                     </mat-form-field>
                   </div>
                 </div>
-                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="20%">
-                  <img *ngIf="categoryForm.value.image && categoryForm.value.image != ''" [src]="categoryForm.value.image">
-                  <img *ngIf="!categoryForm.value.image || categoryForm.value.image == ''" [src]="defaultImage">
+                <div class="p-4" fxLayout="column" fxLayoutGap="3px" fxFlex="25%">
+                  <img *ngIf="photo != ''" [src]="photo">
+                  <img *ngIf="photo == ''" [src]="defaultImage">
                   <input type="file" accept="image/*" #file name="image" fxHide (change)="onFileChange($event)">
-                  <button mat-raised-button color="primary" (click)="browseProfilePicture()">Browse</button>
-                  <button mat-raised-button color="warn" (click)="removeFile($event)">Remove</button>
+                  <button type="button" mat-raised-button color="primary" (click)="browseProfilePicture()">Browse
+                  </button>
+                  <button type="button" mat-raised-button color="warn" (click)="removeFile()">Remove</button>
+                </div>
+              </div>
+            </mat-tab>
+
+            <mat-tab label="Category Fields" *ngIf="isEditMode">
+              <div fxLayout="row" fxLayout.xs="column">
+                <form class="tab-content p-24" fusePerfectScrollbar fxFlex
+                      [formGroup]="fieldsForm" novalidate>
+                  <mat-accordion>
+                    <div formArrayName="fields" *ngIf="fieldsForm.controls.fields">
+                    <mat-expansion-panel *ngFor="let field of fieldsForm.controls['fields'].controls; let i = index"
+                                         (opened)="setSelectedFieldsPanel(field)"
+                                         [expanded]="selectedFieldPanel  && fieldsPanelOpen"
+                                          >
+                      <!--(opened)="setSelectedForm(sub)"
+                      [expanded]="selectedForm && selectedForm.value.id === sub.value.id && panelOpened"-->
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          <h3 class="text-bold"> {{field.value.key}}</h3>
+                        </mat-panel-title>
+                        <mat-panel-description>
+
+                        </mat-panel-description>
+                      </mat-expansion-panel-header>
+                      <div *ngIf="selectedFieldPanel">
+                              <div formGroupName="{{i}}" fxLayout="row" fxLayoutGap="2rem" fxFlex="10%">
+                                <mat-form-field class="w-100-p">
+                                  <input matInput name="fieldkey" placeholder="Field Key" formControlName="key"
+                                         required>
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p"
+                                                *ngIf="field.controls.type.value === 'text' || field.controls.type.value === 'choose'">
+                                  <input matInput name="fieldkey" placeholder="Field Value" formControlName="value">
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p"
+                                                *ngIf="field.controls.type.value === 'number'">
+                                  <input type="number" matInput name="fieldkey" placeholder="Field Value"
+                                         formControlName="value">
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p">
+                                  <mat-select placeholder="Field Type" name="fieldtype" formControlName="type"
+                                              ([value])="field.controls.type.value"
+                                              (change)="onSelectType([{val:i, type:'choose'}], field.controls.type.value, 'fieldsForm')">
+                                    <mat-option value="text">Text</mat-option>
+                                    <mat-option value="number">Number</mat-option>
+                                    <mat-option value="choose">Select</mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+                                <div fxLayout="row" fxLayoutAlign="start start">
+                                  <div fxFlex="56%"
+                                       *ngIf="field.controls.type.value === 'choose' && field.controls.values && field.controls.values.length>0"
+                                       fxLayout="column"
+                                       formArrayName="values">
+                                    <div *ngFor="let vv of field.controls.values.controls; let j = index ">
+                                      <div fxLayout="row" formGroupName="{{j}}" fxFlex="25%" fxLayoutGap="2rem">
+                                        <mat-form-field class="w-100-p">
+                                          <input matInput name="fieldvalue" placeholder="Value" formControlName="value">
+                                        </mat-form-field>
+
+                                        <!--3-->
+                                        <div fxLayout="row" fxLayoutAlign="start start" fxFlex="240%">
+                                          <div *ngIf="vv.controls.fields "
+                                               fxLayout="column"
+                                               formArrayName="fields">
+                                            <div *ngFor="let ff of vv.controls.fields.controls; let k = index ">
+                                              <div fxLayout="row" formGroupName="{{k}}" fxLayoutGap="2rem" fxFlex="12%">
+                                                <mat-form-field class="w-100-p">
+                                                  <input matInput name="ff" placeholder="Field Key"
+                                                         formControlName="key">
+                                                </mat-form-field>
+                                                <mat-form-field class="w-100-p">
+                                                  <mat-select name="fft" placeholder="Field Type" formControlName="type"
+                                                              ([value])="ff.controls.type.value"
+                                                              (change)="onSelectType([{val:i}, {val:j}, {val:k,type:'choose'}], ff.controls.type.value,'fieldsForm')">
+                                                    <mat-option value="text">Text</mat-option>
+                                                    <mat-option value="number">Number</mat-option>
+                                                    <mat-option value="choose">Select</mat-option>
+                                                  </mat-select>
+                                                </mat-form-field>
+
+
+                                                <!--4-->
+
+                                                <div fxLayout="row" fxLayoutAlign="start start" fxFlex="90%">
+                                                  <div
+                                                    *ngIf="ff.controls.type.value === 'choose' " fxLayout="column"
+                                                    formArrayName="values">
+                                                    <div
+                                                      *ngFor="let vvv of ff.controls.values.controls; let e = index ">
+                                                      <div fxLayout="row" formGroupName="{{e}}" fxFlex="25%">
+                                                        <mat-form-field class="w-100-p">
+                                                          <input matInput name="fieldvalue" placeholder="Value"
+                                                                 formControlName="value">
+                                                        </mat-form-field>
+                                                        <button type="button" mat-icon-button color="warn"
+                                                                (click)="removeSomething([{val:i}, {val:j}, {val:k}, {val:e, remove:true}], 'fieldsForm')"
+                                                                matTooltip="Remove {{vvv.controls.value.value}}">
+                                                          <mat-icon aria-label="remove">delete</mat-icon>
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                    <button matTooltip="Add Value to {{ff.controls.key.value}}"
+                                                            type="button"
+                                                            mat-icon-button color="warn"
+                                                            (click)="addSomething([{val:i}, {val:j}, {val:k,add:true}], 'fieldsForm')">
+                                                      <mat-icon aria-label="add value">add</mat-icon>
+                                                    </button>
+                                                    <br/>
+                                                    <br/>
+                                                    <br/>
+                                                    <br/>
+                                                  </div>
+                                                </div>
+                                                <!--/4-->
+                                                <button type="button" mat-icon-button mat-raised-button color="warn"
+                                                        (click)="removeSomething([{val:i},{val:j},{val:k, remove:true}], 'fieldsForm')"
+                                                        matTooltip="Remove {{ff.controls.key.value}}">
+                                                  <mat-icon aria-label="remove">delete</mat-icon>
+                                                </button>
+                                              </div>
+                                            </div>
+                                            <button matTooltip="Add Field {{vv.controls.value.value}}" type="button"
+                                                    mat-raised-button
+                                                    mat-icon-button color="warn"
+                                                    (click)="addSomething([{val: i}, {val:j,add:true}], 'fieldsForm')">
+                                              <mat-icon aria-label="add field">add</mat-icon>
+                                            </button>
+                                            <br/>
+                                            <br/>
+                                            <br/>
+                                            <br/>
+                                          </div>
+
+                                          <br/>
+                                          <br/>
+                                          <br/>
+                                          <br/>
+                                        </div>
+                                        <!--/3-->
+
+                                        <button type="button" mat-raised-button mat-icon-button color="primary"
+                                                (click)="removeSomething([{val: i}, {val: j, remove: true}], 'fieldsForm')"
+                                                matTooltip="Remove {{vv.controls.value.value}}">
+                                          <mat-icon aria-label="remove">delete</mat-icon>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <button type="button" mat-raised-button mat-icon-button color="primary"
+                                            (click)="addSomething([{val: i, add: true}], 'fieldsForm')"
+                                            matTooltip="Add Value to {{field.controls.key.value}}">
+                                      <mat-icon aria-label="add value">add</mat-icon>
+                                    </button>
+
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                  </div>
+                                  <button type="button" mat-raised-button mat-icon-button color="accent"
+                                          (click)="removeSomething([{val:i, remove: true}], 'fieldsForm')"
+                                          matTooltip="Remove {{field.controls.key.value}}">
+                                    <mat-icon aria-label="remove">delete</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                      </div>
+
+
+                    </mat-expansion-panel>
+                    </div>
+                    <button type="button" mat-raised-button mat-icon-button color="accent"
+                            (click)="addSomething(null, 'fieldsForm')"
+                            matTooltip="Add Field to the Category {{fieldsForm.controls.title.value}}">
+                      <mat-icon aria-label="add field">add</mat-icon>
+                    </button>
+                  </mat-accordion>
+                </form>
+              </div>
+            </mat-tab>
+
+            <mat-tab label="Sub-Categories" *ngIf="isEditMode">
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex>
+                  <div fxLayout="row" fxLayoutAlign="end end">
+                    <button mat-button type="button" color="warn" *ngIf="isEditMode"
+                            (click)="deleteAllSubCategories()">Delete All Sub-Categories
+                    </button>
+                  </div>
+                  <mat-accordion>
+                    <mat-expansion-panel *ngFor="let sub of subCategories, let num = index"
+                                         (opened)="setSelectedForm(sub)"
+                                         [expanded]="selectedForm && selectedForm.value.id === sub.value.id && panelOpened">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          <h3 class="text-bold"> {{sub.value.title}}</h3>
+                        </mat-panel-title>
+                        <!--<mat-panel-description>
+
+                        </mat-panel-description>-->
+                      </mat-expansion-panel-header>
+                      <div *ngIf="selectedForm">
+                        <form [formGroup]="selectedForm" novalidate (ngSubmit)="onSubmit(selectedForm)">
+                          <mat-form-field>
+                            <input matInput formControlName="title" placeholder="title">
+                          </mat-form-field>
+                          <div formArrayName="fields" *ngIf="selectedForm.controls.fields">
+                            <div *ngFor="let field of getSubCategoryFields(sub); let i = index">
+                              <div formGroupName="{{i}}" fxLayout="row" fxLayoutGap="2rem" fxFlex="10%">
+                                <mat-form-field class="w-100-p">
+                                  <input matInput name="fieldkey" placeholder="Field Key" formControlName="key"
+                                         required>
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p"
+                                                *ngIf="field.controls.type.value === 'text' || field.controls.type.value === 'choose'">
+                                  <input matInput name="fieldkey" placeholder="Field Value" formControlName="value">
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p"
+                                                *ngIf="field.controls.type.value === 'number'">
+                                  <input type="number" matInput name="fieldkey" placeholder="Field Value"
+                                         formControlName="value">
+                                </mat-form-field>
+                                <mat-form-field class="w-100-p">
+                                  <mat-select placeholder="Field Type" name="fieldtype" formControlName="type"
+                                              ([value])="field.controls.type.value"
+                                              (change)="onSelectType([{val:i, type:'choose'}], field.controls.type.value, 'selectedForm')">
+                                    <mat-option value="text">Text</mat-option>
+                                    <mat-option value="number">Number</mat-option>
+                                    <mat-option value="choose">Select</mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+                                <div fxLayout="row" fxLayoutAlign="start start">
+                                  <div fxFlex="56%"
+                                       *ngIf="field.controls.type.value === 'choose' && field.controls.values && field.controls.values.length>0"
+                                       fxLayout="column"
+                                       formArrayName="values">
+                                    <div *ngFor="let vv of field.controls.values.controls; let j = index ">
+                                      <div fxLayout="row" formGroupName="{{j}}" fxFlex="25%" fxLayoutGap="2rem">
+                                        <mat-form-field class="w-100-p">
+                                          <input matInput name="fieldvalue" placeholder="Value" formControlName="value">
+                                        </mat-form-field>
+
+                                        <!--3-->
+                                        <div fxLayout="row" fxLayoutAlign="start start" fxFlex="240%">
+                                          <div *ngIf="vv.controls.fields "
+                                               fxLayout="column"
+                                               formArrayName="fields">
+                                            <div *ngFor="let ff of vv.controls.fields.controls; let k = index ">
+                                              <div fxLayout="row" formGroupName="{{k}}" fxLayoutGap="2rem" fxFlex="12%">
+                                                <mat-form-field class="w-100-p">
+                                                  <input matInput name="ff" placeholder="Field Key"
+                                                         formControlName="key">
+                                                </mat-form-field>
+                                                <mat-form-field class="w-100-p">
+                                                  <mat-select name="fft" placeholder="Field Type" formControlName="type"
+                                                              ([value])="ff.controls.type.value"
+                                                              (change)="onSelectType([{val:i}, {val:j}, {val:k,type:'choose'}], ff.controls.type.value, 'selectedForm')">
+                                                    <mat-option value="text">Text</mat-option>
+                                                    <mat-option value="number">Number</mat-option>
+                                                    <mat-option value="choose">Select</mat-option>
+                                                  </mat-select>
+                                                </mat-form-field>
+
+
+                                                <!--4-->
+
+                                                <div fxLayout="row" fxLayoutAlign="start start" fxFlex="90%">
+                                                  <div
+                                                    *ngIf="ff.controls.type.value === 'choose' " fxLayout="column"
+                                                    formArrayName="values">
+                                                    <div
+                                                      *ngFor="let vvv of ff.controls.values.controls; let e = index ">
+                                                      <div fxLayout="row" formGroupName="{{e}}" fxFlex="25%">
+                                                        <mat-form-field class="w-100-p">
+                                                          <input matInput name="fieldvalue" placeholder="Value"
+                                                                 formControlName="value">
+                                                        </mat-form-field>
+                                                        <button type="button" mat-icon-button color="warn"
+                                                                (click)="removeSomething([{val:i}, {val:j}, {val:k}, {val:e, remove:true}], 'selectedForm')"
+                                                                matTooltip="">
+                                                          <mat-icon aria-label="remove">delete</mat-icon>
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                    <button matTooltip="Add Value to Field to the Value" type="button"
+                                                            mat-icon-button color="warn"
+                                                            (click)="addSomething([{val:i}, {val:j}, {val:k,add:true}, 'selectedForm'])">
+                                                      <mat-icon aria-label="add value">add</mat-icon>
+                                                    </button>
+                                                    <br/>
+                                                    <br/>
+                                                    <br/>
+                                                    <br/>
+                                                  </div>
+                                                </div>
+                                                <!--/4-->
+                                                <button type="button" mat-icon-button mat-raised-button color="warn"
+                                                        (click)="removeSomething([{val:i},{val:j},{val:k, remove:true}], 'selectedForm')"
+                                                        matTooltip="Remove Field of Value">
+                                                  <mat-icon aria-label="remove">delete</mat-icon>
+                                                </button>
+                                              </div>
+                                            </div>
+                                            <button matTooltip="Add Field to the Value" type="button" mat-raised-button
+                                                    mat-icon-button color="warn"
+                                                    (click)="addSomething([{val: i}, {val:j,add:true}], 'selectedForm')">
+                                              <mat-icon aria-label="add field">add</mat-icon>
+                                            </button>
+                                          </div>
+
+                                          <br/>
+                                          <br/>
+                                          <br/>
+                                          <br/>
+                                        </div>
+                                        <!--/3-->
+
+                                        <button type="button" mat-raised-button mat-icon-button color="primary"
+                                                (click)="removeSomething([{val: i}, {val: j, remove: true}], 'selectedForm')"
+                                                matTooltip="Remove Value from the Field">
+                                          <mat-icon aria-label="remove">delete</mat-icon>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <button type="button" mat-raised-button mat-icon-button color="primary"
+                                            (click)="addSomething([{val: i, add: true}], 'selectedForm')"
+                                            matTooltip="Add Value to the Field">
+                                      <mat-icon aria-label="add value">add</mat-icon>
+                                    </button>
+
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                  </div>
+                                  <button type="button" mat-raised-button mat-icon-button color="accent"
+                                          (click)="removeSomething([{val:i, remove: true}], 'selectedForm')"
+                                          matTooltip="Remove Main Field from the Subcategory">
+                                    <mat-icon aria-label="remove">delete</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+
+                      <button type="button" mat-raised-button mat-icon-button color="accent"
+                              (click)="addSomething(null, 'selectedForm')"
+                              matTooltip="Add Main Field to the SubCategory ">
+                        <mat-icon aria-label="add field">add</mat-icon>
+                      </button>
+
+                      <mat-action-row *ngIf="selectedForm">
+                        <button mat-button color="accent" type="button" *ngIf="isEditMode"
+                                matTooltip="Save subcategory "
+                                (click)="saveSubCategory()">Save
+                          <!--  [disabled]="(selectedForm.value.id === sub.value.id)&& selectedForm.status === 'INVALID')
+                                || (selectedForm.controls.fields && selectedForm.controls.fields.status === 'INVALID')
+                                ||(selectedForm.controls.fields && selectedForm.controls.fields.pristine === true)-->
+                        </button>
+
+                        <button mat-button type="button" color="warn" *ngIf="isEditMode"
+                                (click)="deleteSubCategory(sub)">Delete
+                        </button>
+                      </mat-action-row>
+                    </mat-expansion-panel>
+                  </mat-accordion>
+                  <button mat-icon-button type="button" color="primary" (click)="addNewSubCategory()">
+                    <mat-icon>add</mat-icon>
+                  </button>
                 </div>
               </div>
             </mat-tab>
