@@ -1,0 +1,80 @@
+<div id="city" class="page-layout carded fullwidth" fusePerfectScrollbar>
+
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- HEADER -->
+    <div class="header white-fg" fxLayout="row" fxLayoutAlign="space-between center">
+
+      <!-- APP TITLE -->
+      <div fxLayout="row" fxLayoutAlign="start center">
+
+        <button class="mr-0 mr-sm-16" mat-icon-button [routerLink]="'/cities'">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div fxLayout="column" fxLayoutAlign="start start" *fuseIfOnDom
+             [@animate]="{value:'*',params:{delay:'100ms',x:'-25px'}}">
+          <div class="h2" *ngIf="isEditMode">
+            {{cityForm.value.name}}
+          </div>
+          <div class="h2" *ngIf="!isEditMode">
+            New City
+          </div>
+          <div class="subtitle secondary-text">
+            <span>City Details</span>
+          </div>
+        </div>
+      </div>
+      <!-- / APP TITLE -->
+
+
+      <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+              [disabled]="cityForm.status == 'INVALID' || cityForm.pristine == true"
+              (click)="f.ngSubmit.emit()">
+        <span>SAVE</span>
+      </button>
+
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT CARD -->
+    <div class="content-card mat-white-bg">
+
+      <!-- CONTENT -->
+      <div class="content">
+        <form [formGroup]="cityForm" (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column"
+              fxFlex>
+          <mat-tab-group>
+
+            <mat-tab label="Basic Info">
+
+              <div fxLayout="row" fxLayout.xs="column">
+                <div class="tab-content p-24" fusePerfectScrollbar fxFlex="80%">
+                  <div fxLayout="row" fxLayoutAlign="start start">
+                    <mat-icon class="mr-12 mt-12">account_circle</mat-icon>
+                    <mat-form-field class="w-100-p">
+                      <input matInput formControlName="name" placeholder="Name" required>
+                      <mat-error *ngIf="cityForm.controls.name.invalid">{{getErrorMessage('name','required','', '')}}
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </mat-tab>
+
+          </mat-tab-group>
+        </form>
+        <!-- / CONTENT -->
+
+      </div>
+      <!-- / CONTENT CARD -->
+
+    </div>
+    <!-- / CENTER -->
+  </div>
+</div>
