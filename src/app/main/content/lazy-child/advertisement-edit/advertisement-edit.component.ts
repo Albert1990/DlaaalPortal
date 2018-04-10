@@ -4,6 +4,7 @@ import {FormArray, FormControl, FormGroup, NgForm, Validators, FormBuilder} from
 import {PageAction} from '../../shared/enums/page-action';
 import {AdvertisementsService} from '../../lazy-child/advertisements.service';
 import {Advertisement} from '../../lazy-child/advertisement.model';
+import {GUID} from '../../GUID/GUID.module';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HelpersService} from '../../shared/helpers.service';
 import {FuseSplashScreenService} from '../../../../core/services/splash-screen.service';
@@ -13,6 +14,7 @@ import {SubCategoriesService} from './../../categories/subCategories/subCategori
 import {UsersService} from './../../users/users.service';
 import {AppSettings} from '../../shared/app.settings';
 import {AuthService} from '../../auth/auth.service';
+
 
 @Component({
   selector: 'app-advertisement-edit',
@@ -28,6 +30,7 @@ export class AdvertisementEditComponent implements OnInit {
   categories = [];
   users = [];
   finalValues = new FormArray([]);
+  Guid: GUID;
 
 
   // @ViewChild('file') fileSelector: ElementRef;
@@ -44,6 +47,7 @@ export class AdvertisementEditComponent implements OnInit {
               private authService: AuthService,
               public formBuilder: FormBuilder) {
     this.advert = new Advertisement();
+    this.Guid = new GUID();
   }
 
 
@@ -96,8 +100,6 @@ export class AdvertisementEditComponent implements OnInit {
   setSelectedCategory(category) {
     this.advert.category = category;
     this.subCategoryFields = new FormGroup({});
-    //this.advertForm.value.fields['controls'] = [];
-    //this.advertForm.controls.fields['controls'] = [];
     if (category && category !== null && category !== '') this.getSubCategories(category);
     else this.advertForm.value.subCategoryId = '';
   }
@@ -107,35 +109,12 @@ export class AdvertisementEditComponent implements OnInit {
     console.log('this.advertForm ', this.advertForm);
     this.advert.subCategory = subCategory;
     this.subCategoryFields = new FormGroup({});
-    //this.advertForm.value.fields['controls'] = [];
-    //this.advertForm.controls.fields['controls'] = [];
     if (!subCategory || subCategory == null || subCategory === '') {
-      //this.advertForm.value.fields['controls'] = '';
-      //this.subCategoryFields = new FormGroup({});
     }
     else {
       if(subCategory.fields )
         this.subCategoryFields = this.createForm(subCategory);
     }
-      /*let items = this.advertForm.get('fields')['controls'] as FormArray;
-      console.log('this.advertForm.get(\'fields\')', this.advertForm.get('fields'));
-      for (let i = 0; i < subCategory.fields.length; i++) {
-        items.push(new FormGroup({
-          key: new FormControl(subCategory.fields[i].key),
-          type: new FormControl(subCategory.fields[i].type),
-          value: new FormControl(subCategory.fields[i].value),
-        }));
-        if (subCategory.fields[i].type === 'choose') {
-          this.advertForm.controls.fields['controls'][i].controls.values = new FormArray([]);
-          let vv = this.advertForm.get(['fields', i, 'values']) as FormArray;
-          console.log('vv', vv);
-          for (let j = 0; j < subCategory.fields[i].values.length; j++) {
-            vv.push(new FormControl(subCategory.fields[i].values[j]));
-            console.log('vv', vv);
-          }
-        }*/
-
-      //this.finalValues = this.advertForm.controls.fields['controls'];
 
   }
 
@@ -146,7 +125,7 @@ export class AdvertisementEditComponent implements OnInit {
     console.log('this.advertForm add', this.advertForm.value);
 
     // this.advertForm.value.fields = this.advert.subCategory.fields;
-    /*if (this.isEditMode) {
+    if (this.isEditMode) {
       console.log('this.advertForm edit', this.advertForm.value);
       this.advertisementsService.update(this.advertForm.value).then((val) => {
         this.helpers.showActionSnackbar(PageAction.Update, true, 'advertisements');
@@ -169,7 +148,7 @@ export class AdvertisementEditComponent implements OnInit {
         this.loadingScreen.hide();
         console.log('error ', reason);
       });
-    }*/
+    }
   }
 
   uploadImages(images) {
@@ -198,24 +177,6 @@ export class AdvertisementEditComponent implements OnInit {
         this.submit();
       }
     }
-  }
-
-  prepareFields() {
-    let arr = [], obj;
-    for (var i = 0; i < this.finalValues.length; i++) {
-      let obj1 = {
-        key: this.finalValues[i].controls['key'].value,
-        value: this.finalValues[i].controls['value'].value,
-        type: this.finalValues[i].controls['type'].value
-      };
-      if (this.finalValues[i].controls['type'].value === 'choose') {
-        let obj2 = {values: this.finalValues[i].controls['values'].value};
-        obj = Object.assign(obj1, obj2);
-      } else obj = obj1;
-      arr.push(obj);
-    }
-    console.log('arr ', arr);
-    return arr;
   }
 
   onSubmit(thisAdvertForm: NgForm) {
@@ -266,75 +227,6 @@ export class AdvertisementEditComponent implements OnInit {
 
    // console.log('this.advertForm.controls.images.value ', this.advertForm.controls.images.value);
   }
-
-  removeField(i) {
-    const fields = <FormArray>this.advertForm.get('fields');
-    fields.removeAt(i);
-
-  }
-
-  addField() {
-    let fields = this.advertForm.get('fields')['controls'] as FormArray;
-   // console.log('fields ', fields);
-    fields.push(this.initFields());
-  }
-
-
-  removeValue(i, j) {
-   // console.log('i ', i, 'j ', j);
-    let values = this.advertForm.get(['fields', i, 'values']) as FormArray;
-   // console.log('values ', values);
-    values.removeAt(j);
-    this.finalValues = this.advertForm.controls.fields['controls'];
-  }
-
-  addValue(i) {
-    console.log(i);
-    // let values = this.advertForm.controls.fields.controls[i].controls.values;
-    const values = <FormArray>this.advertForm.get('fields')['controls'][i].get('values');
-    // const values = this.advertForm.get(['fields', i, 'values']) as FormArray;
-    console.log(values);
-    // const control = <FormArray>this.survey.get('sections').controls[j].get('questions');
-    values.push(this.initFieldValues());
-    this.finalValues = this.advertForm.controls.fields['controls'];
-  }
-
-  printt(a) {
-    console.log(a);
-    console.log('this.finalValues ', this.finalValues);
-  }
-
-  selectFieldType(type, field, i) {
-   // console.log('type ', type);
-   // console.log('field ', type, field, i);
-    if (type === 'choose') {
-      // const values = <FormArray>this.advertForm.get('fields').controls[i].get('values');
-
-      this.advertForm.controls.fields['controls'][i].controls.values = new FormArray([this.initFieldValues()]);
-
-      const vv = this.advertForm.get(['fields', i, 'values']) as FormArray;
-     // console.log('vv', vv);
-      vv.push(new FormControl(''));
-     // console.log('vv', vv);
-     // console.log(' this.advertForm.controls.fields', this.advertForm.controls.fields);
-      this.finalValues = this.advertForm.controls.fields['controls'];
-    }
-  }
-
-  initFieldValues() {
-    return new FormControl('');
-  }
-
-  initFields() {
-    return new FormGroup({
-      key: new FormControl(''),
-      type: new FormControl(''),
-      value: new FormControl(''),
-      // value: new FormArray([this.initFieldValues()])
-    });
-  }
-
-
 
   //============================================================================//
 
@@ -469,6 +361,7 @@ export class AdvertisementEditComponent implements OnInit {
         subArr.push(this.createSubItem(obj.values[i]));
       }
       return this.formBuilder.group({
+        _id: obj._id || this.Guid.newGuid(),
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
@@ -476,6 +369,7 @@ export class AdvertisementEditComponent implements OnInit {
       });
     } else {
       return this.formBuilder.group({
+        _id: obj._id || this.Guid.newGuid(),
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
@@ -500,6 +394,7 @@ export class AdvertisementEditComponent implements OnInit {
         subArr.push(this.createSubItem3(subItem.values[i]));
       }
       return this.formBuilder.group({
+        _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
         //value: subItem.value || '',
@@ -507,6 +402,7 @@ export class AdvertisementEditComponent implements OnInit {
       });
     } else {
       return this.formBuilder.group({
+        _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
         //value: subItem.value,
@@ -588,38 +484,7 @@ export class AdvertisementEditComponent implements OnInit {
     } else {
       if (this.advert.fields && this.advert.fields !== null) {
         this.subCategoryFields = this.createForm(this.advert);
-        //this.subCategoryFields  this.createItem(this.advert.fields);
         console.log('this.subCategoryFields ', this.subCategoryFields);
-        //for (let i = 0; i < this.advert.fields.length; i++) {
-          //this.createForm(val.items[i].fields);
-
-         //  fields = this.createForm(this.advert.fields);
-       // }
-       // let items = this.advertForm.get('fields') as FormArray;
-       // console.log('this.advertForm.get(\'fields\')', this.advertForm.get('fields'));
-       /* for (let i = 0; i < this.advert.fields.length; i++) {
-          items.push(new FormGroup({
-            key: new FormControl(this.advert.fields[i].key),
-            type: new FormControl(this.advert.fields[i].type),
-            value: new FormControl(this.advert.fields[i].value),
-            // values: new FormControl(this.advert.subCategory.fields[i].values),
-          }));
-
-          if (this.advert.fields[i].type === 'choose') {
-          //  console.log('advertForm.controls.fields.controls[i] ', i, this.advertForm.controls.fields['controls'][i]);
-           // console.log('this.advertForm.get([\'fields\', i]', this.advertForm.get(['fields', i]));
-            this.advertForm.controls.fields['controls'][i].controls.values = new FormArray([]);
-            let vv = this.advertForm.get(['fields', i, 'values']) as FormArray;
-           // console.log('vv', vv);
-            for (let j = 0; j < this.advert.fields[i].values.length; j++) {
-              vv.push(new FormControl(this.advert.fields[i].values[j]));
-            //  console.log('vv', vv);
-            }
-          }
-        }
-      //  console.log('advertForm ', this.advertForm);
-        this.finalValues = this.advertForm.controls.fields['controls'];*/
-      //  console.log('this.finalValues ', this.finalValues);
       }
 
     }

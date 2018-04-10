@@ -3,12 +3,12 @@ import {fuseAnimations} from '../../../../core/animations';
 import {FormArray, FormControl, FormGroup, NgForm, Validators, FormBuilder} from '@angular/forms';
 import {CategoriesService} from '../categories.service';
 import {Category} from '../../categories/category.model';
-import {SubCategory} from '../../categories/subCategories/subCategory.model';
 import {SubCategoriesService} from '../../categories/subCategories/subCategories.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FuseSplashScreenService} from '../../../../core/services/splash-screen.service';
 import {HelpersService} from '../../shared/helpers.service';
 import {PageAction} from '../../shared/enums/page-action';
+import {GUID} from '../../GUID/GUID.module';
 import {MatTabChangeEvent} from '@angular/material';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {FuseConfirmDialogComponent} from '../../../../core/components/confirm-dialog/confirm-dialog.component';
@@ -26,6 +26,7 @@ export class CategoryEditComponent implements OnInit {
   categoryForm: FormGroup;
   fieldsForm: FormGroup;
   category: Category;
+  Guid: GUID;
   subCategories = [];
   isEditMode = false;
   photo = '';
@@ -50,7 +51,7 @@ export class CategoryEditComponent implements OnInit {
               public formBuilder: FormBuilder
              ) {
     this.category = new Category();
-
+    this.Guid = new GUID();
   }
 
 
@@ -95,72 +96,6 @@ export class CategoryEditComponent implements OnInit {
   }
 
   // ===========================================================================================//
-  initFinalValues() {
-    if (this.selectedForm.controls['fields']) {
-      this.finalValues = this.selectedForm.controls['fields']['controls'];
-    }
-  }
-
-  initFields(field = null, level = null) {
-    console.log('initFields ', field);
-    if (field !== null) {
-      if (field.type === 'choose') {
-        console.log('choose ');
-        return new FormGroup({
-          key: new FormControl(field.key),
-          type: new FormControl(field.type),
-          value: new FormControl(field.value),
-          values: new FormArray([])
-          // this.initValues(field.values)
-        });
-      }
-      return new FormGroup({
-        key: new FormControl(field.key),
-        type: new FormControl(field.type),
-        value: new FormControl(field.value)
-      });
-    }
-    return new FormGroup({
-      key: new FormControl(''),
-      type: new FormControl(''),
-      value: new FormControl('')
-    });
-  }
-
-  initValues(value = null, level = null) {
-    console.log('initValues ', value, level);
-    let values;
-    switch (level) {
-      case 3 :
-        if (value !== null) {
-          values = new FormGroup({
-            value: new FormControl(value.value)
-          });
-        } else {
-          values = new FormGroup({
-            value: new FormControl('')
-          });
-        }
-        break;
-      default :
-        if (value !== null) {
-          values = new FormGroup({
-            value: new FormControl(value.value),
-            fields: new FormArray([])
-            // value.fields
-          });
-        } else {
-          values = new FormGroup({
-            value: new FormControl(''),
-            fields: new FormArray([])
-            // value.fields
-          });
-        }
-        break;
-    }
-    console.log('initValues ', values);
-    return values;
-  }
 
   addSomething(levels = null, from): void {
     console.log("addSomething ", levels);
@@ -287,19 +222,17 @@ export class CategoryEditComponent implements OnInit {
     this.selectedForm = sub;
     if (close == 'close') this.panelOpened = false;
     else this.panelOpened = true;
-    //this.finalValues = new FormArray([]);
-    //this.initFinalValues();
   }
 
 
   createItem(obj): FormGroup { //Fields 1
-    console.log('choose ', obj);
     if (obj.type == 'choose' && obj.values && obj.values.length > 0) {
       var subArr = [];
       for (var i = 0; i < obj.values.length; i++) {
         subArr.push(this.createSubItem(obj.values[i]));
       }
       return this.formBuilder.group({
+        _id: obj._id || this.Guid.newGuid(),
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
@@ -307,6 +240,7 @@ export class CategoryEditComponent implements OnInit {
       });
     } else {
       return this.formBuilder.group({
+        _id: obj._id || this.Guid.newGuid(),
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
@@ -317,20 +251,19 @@ export class CategoryEditComponent implements OnInit {
   }
 
   createSubItem3(subItem): FormGroup { //values 2
-    console.log('subItem ', subItem);
     return this.formBuilder.group({
       value: subItem.value || ''
     });
   }
 
   createSubItem2(subItem): FormGroup { //fields 2
-    console.log('createSubItem2' ,subItem);
     if (subItem.type == 'choose' && subItem.values && subItem.values.length > 0) {
       var subArr = [];
       for (var i = 0; i < subItem.values.length; i++) {
         subArr.push(this.createSubItem3(subItem.values[i]));
       }
       return this.formBuilder.group({
+        _id: subItem._id ||this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
         //value: subItem.value || '',
@@ -338,6 +271,7 @@ export class CategoryEditComponent implements OnInit {
       });
     } else {
       return this.formBuilder.group({
+        _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
         //value: subItem.value,
@@ -371,8 +305,6 @@ export class CategoryEditComponent implements OnInit {
       for (var i = 0; i < obj.fields.length; i++) {
         arr.push(this.createItem(obj.fields[i]));
       }
-      console.log('arr', arr);
-
       return this.formBuilder.group({
         title: new FormControl(obj.title || 'New Sub-category', [Validators.required]),
         categoryId: new FormControl(obj.categoryId || ''),
@@ -391,51 +323,8 @@ export class CategoryEditComponent implements OnInit {
   }
 
   getSubCategoriesListing() {
-    this.subCategories = [];
-    let cat = {
-      title: "title",
-      categoryId: '12123123',
-      id: '1',
-      fields: [
-        {'key': 'key1', 'type': 'text', value: 'textvalue'},
-        {
-          'key': 'abc', 'type': 'choose', value: 'textvalue',
-          'values': [
-            {
-              'value': 'BMW',
-              'fields': [
-                {'key': 'model', 'type': 'number'},
-                {
-                  'key': 'model', 'type': 'choose',
-                  'values': [
-                    {'value': 'BM X5'},
-                    {'value': 'BM X6'},
-                  ]
-                }
-              ]
-            }]
-        },
-        {
-          'key': 'Brand2', 'type': 'choose', value: 'textvalue',
-          'values': [
-            {
-              'value': 'BMW2',
-              'fields': [
-                {
-                  'key': 'model', 'type': 'choose',
-                  'values': [
-                    {'value': 'BM X5'},
-                    {'value': 'BM X6'},
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    };
-    //this.createForm(cat);
 
+    this.subCategories = [];
     this.loadingScreen.show();
     this.subCategoriesService.listing(this.category.id).then((val) => {
       console.log('val.items ', val);
@@ -443,7 +332,6 @@ export class CategoryEditComponent implements OnInit {
         //this.createForm(val.items[i].fields);
         this.subCategories.push(this.createForm(val.items[i]));
       }
-
       console.log('this.subCategories ', this.subCategories);
       this.loadingScreen.hide();
     }, (reason) => {
@@ -453,97 +341,10 @@ export class CategoryEditComponent implements OnInit {
     this.panelOpened = false;
   }
 
-  getSubCategoriesListing__() {
-    this.subCategories = [];
-    this.loadingScreen.show();
-    this.subCategoriesService.listing(this.category.id).then((val) => {
-      console.log('val.items ', val);
-      for (let i = 0; i < val.items.length; i++) {
-        const sub = new FormGroup({
-          title: new FormControl(val.items[i].title, [Validators.required]),
-          categoryId: new FormControl(val.items[i].categoryId),
-          id: new FormControl(val.items[i].id)
-        });
-
-        if (val.items[i].fields && val.items[i].fields !== null) {
-          sub.controls['fields'] = new FormArray([]);
-          const fields = sub.get('fields') as FormArray;
-          //console.log('values val.items[i].fields', val.items[i].fields);
-          for (let f = 0; f < val.items[i].fields.length; f++) {
-            // console.log('val.items[i].fields[f] ',i,f, val.items[i].fields[f]);
-            fields.push(this.initFields(val.items[i].fields[f]));
-
-            if (val.items[i].fields[f].type === 'choose' && val.items[i].fields[f].values) {
-              //console.log('val.items[i].fields[f].type ', val.items[i].fields[f].type);
-              //console.log('choose ');
-              sub.controls['fields']['controls'][f].value.values = new FormArray([]);
-              //console.log('sub.controls.fields[\'controls\'][i] ', sub.controls.fields['controls'][f]);
-              const values = sub.get(['fields', f, 'values']) as FormArray;
-              // console.log('values formarray', values);
-              // console.log('val.items[i].fields[f].values ', val.items[i].fields[f].values);
-              for (let j = 0; j < val.items[i].fields[f].values.length; j++) {
-                values.push(this.initValues(val.items[i].fields[f].values[j]));
-                if (val.items[i].fields[f].values[j].fields && val.items[i].fields[f].values[j].fields.length > 0) {
-                  // console.log("LALALALALALALALALLALALALALALLALA ", j, val.items[i].fields[f].values[j].fields);
-                  // console.log("sub.controls.fields['controls'][f]['controls']['values'][j] ", sub.controls.fields['controls'][f]['controls']['values']['controls'][j].value.fields);
-                  sub.controls['fields']['controls'][f]['controls']['values']['controls'][j].value.fields = new FormArray([]);
-                  const fields2 = sub.get(['fields', f, 'values', j, 'fields']) as FormArray;
-                  // console.log('fields2', fields2);
-                  for (let k = 0; k < val.items[i].fields[f].values[j].fields.length; k++) {
-                    //kk.push(new FormControl(val.items[i].fields[f].values[j].fields[k]));
-                    // console.log('val.items[i].fields[f].values[j].fields[k] ', val.items[i].fields[f].values[j].fields[k]);
-                    fields2.push(this.initFields(val.items[i].fields[f].values[j].fields[k]));
-
-                    if (val.items[i].fields[f].values[j].fields[k].type === 'choose' && val.items[i].fields[f].values[j].fields[k].values) {
-                      console.log("chooooose ", val.items[i].fields[f].values[j].fields[k])
-                      sub.controls['fields']['controls'][f]['controls']['values']['controls'][j]['controls']['fields']['controls'][k].value.values = new FormArray([]);
-                      const values2 = sub.get(['fields', f, 'values', j, 'fields', k, 'values']) as FormArray;
-                      for (let e = 0; e < val.items[i].fields[f].values[j].fields[k].values.length; e++) {
-                        values2.push(this.initValues(val.items[i].fields[f].values[j].fields[k].values[e], 3));
-                        console.log('values2 ', values2);
-                      }
-                    }
-                  }
-                }
-              }
-
-            }
-          }
-        }
-        this.subCategories.push(sub);
-      }
-
-      console.log('this.subCategories ', this.subCategories);
-      this.loadingScreen.hide();
-    }, (reason) => {
-      this.loadingScreen.hide();
-      // console.log('error ', reason);
-    });
-    this.panelOpened = false;
-  }
 
 
   // ===========================================================================================//
 
-
-  prepareFields() {
-    console.log('this.finalValues ', this.finalValues);
-    let arr = [];
-    for (let i = 0; i < this.finalValues.length; i++) {
-      arr.push(this.finalValues[i]);
-    }
-    let controlsarr = arr.map(function (i) {
-      return i.controls;
-    });
-    for (var v = 0; v < controlsarr.length; v++) {
-      if (controlsarr[v].values) controlsarr[v].values = controlsarr[v].values.value;
-      if (controlsarr[v].value) controlsarr[v].value = controlsarr[v].value.value;
-      if (controlsarr[v].key) controlsarr[v].key = controlsarr[v].key.value;
-      if (controlsarr[v].type) controlsarr[v].type = controlsarr[v].type.value;
-    }
-    console.log('controlsarr ', controlsarr);
-    return controlsarr;
-  }
 
   saveSubCategory() {
     console.log('this.selectedForm.value ', this.selectedForm);
@@ -574,9 +375,6 @@ export class CategoryEditComponent implements OnInit {
         console.log('error ', reason);
       });
     }
-    //this.initFinalValues();
-    //}
-
   }
 
   addNewSubCategory() {
@@ -646,89 +444,6 @@ export class CategoryEditComponent implements OnInit {
     });
   }
 
-  getSubCategoriesListing_() {
-    this.subCategories = [];
-    this.loadingScreen.show();
-    this.subCategoriesService.listing(this.category.id).then((val) => {
-      console.log('val ', val);
-      for (let i = 0; i < val.items.length; i++) {
-        console.log('valval.items ', val.items[i]);
-        const sub = new FormGroup({
-          title: new FormControl(val.items[i].title, [Validators.required]),
-          categoryId: new FormControl(val.items[i].categoryId),
-          id: new FormControl(val.items[i].id),
-          /* fields: new FormArray([
-           this.initFields(val.items[i].fields),
-           ])*/
-        });
-        if (val.items[i].fields && val.items[i].fields !== null) {
-          sub.controls.fields = new FormArray([]);
-          const fields = sub.get('fields') as FormArray;
-          for (let f = 0; f < val.items[i].fields.length; f++) {
-            fields.push(new FormGroup({
-              key: new FormControl(val.items[i].fields[f].key),
-              type: new FormControl(val.items[i].fields[f].type),
-              value: new FormControl(val.items[i].fields[f].value),
-            }));
-            console.log('val.items[i].fields[f].type ', val.items[i].fields[f].type);
-            if (val.items[i].fields[f].type === 'choose') {
-              console.log('val.items[i].fields[f].type ', val.items[i].fields[f].type);
-              console.log('sub ', sub);
-              sub.controls.fields['controls'][f].controls.values = new FormArray([]);
-              console.log('sub.controls.fields[\'controls\'][i] ', sub.controls.fields['controls'][f]);
-              const vv = sub.get(['fields', f, 'values']) as FormArray;
-              console.log('vv', vv);
-              for (let j = 0; j < val.items[i].fields[f].values.length; j++) {
-                //vv.push(new FormControl(val.items[i].fields[f].values[j]));
-                vv.push(new FormGroup({
-                  value: new FormControl(val.items[i].fields[f].values[j].value),
-                  fields: new FormArray([])
-                }));
-                //vv.push(new FormControl(val.items[i].fields[f].values[j]));
-                if (val.items[i].fields[f].values[j].fields && val.items[i].fields[f].values[j].fields.length > 0) {
-                  console.log("LALALALALALALALALLALALALALALLALA ", j, val.items[i].fields[f].values[j].fields);
-                  console.log("sub.controls.fields['controls'][f]['controls']['values'][j] ", sub.controls.fields['controls'][f]['controls']['values']['controls'][j].value.fields);
-                  sub.controls.fields['controls'][f]['controls']['values']['controls'][j].value.fields = new FormArray([]);
-                  const kk = sub.get(['fields', f, 'values', j, 'fields']) as FormArray;
-                  console.log('kk', kk);
-                  for (let k = 0; k < val.items[i].fields[f].values[j].fields.length; k++) {
-                    //kk.push(new FormControl(val.items[i].fields[f].values[j].fields[k]));
-                    kk.push(new FormGroup({
-                      key: new FormControl(val.items[i].fields[f].values[j].fields[k].key),
-                      type: new FormControl(val.items[i].fields[f].values[j].fields[k].type),
-                      //values: new FormArray(val.items[i].fields[f].values[j].fields[k].values),
-                    }));
-
-                    if (val.items[i].fields[f].values[j].fields[k].type === 'choose') {
-                      sub.controls.fields['controls'][f]['controls']['values']['controls'][j]['value']['fields'][k].values = new FormArray([]);
-                      const vvv = sub.get(['fields', f, 'values', j, 'fields', k, 'values']) as FormArray;
-                      console.log('vvv', vvv);
-                      for (let e = 0; e < val.items[i].fields[f].values[j].fields[k].values.length; e++) {
-                        vvv.push(new FormGroup({
-                          value: new FormControl(val.items[i].fields[f].values[j].fields[k].values[e].value),
-                          //fields: new FormArray([])
-                        }));
-                      }
-                    }
-
-
-                  }
-                }
-
-              }
-            }
-          }
-        }
-        this.subCategories.push(sub);
-      }
-      console.log('this.subCategories ', this.subCategories);
-      this.loadingScreen.hide();
-    }, (reason) => {
-      this.loadingScreen.hide();
-      // console.log('error ', reason);
-    });
-    this.panelOpened = false;
-  }
 
   tabChanged(tabChangeEvent: MatTabChangeEvent) {
     this.fieldsPanelOpen = false;
@@ -802,6 +517,16 @@ export class CategoryEditComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    //console.log('Date.now() + Math.random()', Date.now() ,' ', Math.random());
+
+    //console.log('');
+   /* for (var i = 0; i < 50; i++) {
+      var id = this.Guid.newGuid();
+      console.log(id);
+    }*/
+
+
     console.log('this.route.snapshot.data[\'serverResult\'] ', this.route.snapshot.data['serverResult']);
     this.isEditMode = this.route.snapshot.data['isEditMode'];
     this.subCategories = [];
