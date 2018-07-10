@@ -13,6 +13,8 @@ import {MatTabChangeEvent} from '@angular/material';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {FuseConfirmDialogComponent} from '../../../../core/components/confirm-dialog/confirm-dialog.component';
 import {ChangeDetectorRef} from '@angular/core';
+//import { JsonEditorComponent, JsonEditorOptions } from 'angular4-jsoneditor/jsoneditor/jsoneditor.component';
+
 
 
 @Component({
@@ -37,6 +39,8 @@ export class CategoryEditComponent implements OnInit {
   fieldsPanelOpen = false;
   finalValues = new FormArray([]);
   tabIndex = -1;
+  editorOptions;
+  data;
 
 
   @ViewChild('file') fileSelector: ElementRef;
@@ -52,9 +56,25 @@ export class CategoryEditComponent implements OnInit {
              ) {
     this.category = new Category();
     this.Guid = new GUID();
+
+
+    this.data = {"products":[{"name":"car","product":[{"name":"honda","model":[{"id":"civic","name":"civic"},{"id":"accord","name":"accord"},{"id":"crv","name":"crv"},{"id":"pilot","name":"pilot"},{"id":"odyssey","name":"odyssey"}]}]}]}
   }
 
-
+  showMe = false;
+  showMe2 = false;
+  fixBug(index: number) {
+    if(index === 1) {
+      this.showMe = true;
+      this.showMe2 = false;
+    }else if (index === 2){
+      this.showMe2 = true;
+      this.showMe = false;
+    } else {
+      this.showMe = false;
+      this.showMe2 = false;
+    }
+  }
   getErrorMessage(fieldName, required) {
     return this.categoryForm.controls[fieldName].hasError(required) ? 'You must enter a value' :
       '';
@@ -96,6 +116,17 @@ export class CategoryEditComponent implements OnInit {
   }
 
   // ===========================================================================================//
+  selectedItem;
+  listClick(event, newValue, state) {
+    console.log(newValue);
+    this.selectedItem = newValue;
+    if(state)
+      newValue.showSubfolders = true;
+    else{
+      newValue.showSubfolders = !newValue.showSubfolders;
+    }
+    event.stopPropagation()
+  }
 
   addSomething(levels = null, from): void {
     console.log("addSomething ", levels);
@@ -132,9 +163,7 @@ export class CategoryEditComponent implements OnInit {
         let items = this[from]['controls']['fields']['controls'][levels[0].val]
           ['controls']['values']['controls'][levels[1].val] as FormGroup;
         subItems = items.get('fields') as FormArray;
-
         if (!subItems || subItems == null) {
-          //alert()
           this[from]['controls']['fields']['controls'][levels[0].val]
             ['controls']['values']['controls'][levels[1].val]['controls']['fields'] = new FormArray([]);
           items = this[from]['controls']['fields']['controls'][levels[0].val]
@@ -145,14 +174,13 @@ export class CategoryEditComponent implements OnInit {
 
         subItems.push(this.createSubItem2(''));
       }
+
       if (levels[2] && levels[2].add) { //values 2
         let subItems;
         let items = this[from]['controls']['fields']['controls'][levels[0].val]
           ['controls']['values']['controls'][levels[1].val]
           ['controls']['fields']['controls'][levels[2].val] as FormGroup;
         subItems = items.get('values') as FormArray;
-
-
         if (!subItems || subItems == null) {
          // alert()
           this[from]['controls']['fields']['controls'][levels[0].val]
@@ -168,6 +196,58 @@ export class CategoryEditComponent implements OnInit {
         if (levels[2].type == 'choose') subItems.push(this.createSubItem3(levels[2]));
         else subItems.push(this.createSubItem3(''));
       }
+
+      if (levels[3] && levels[3].add) { //fields 3 level 5
+        let subItems;
+        let items = this[from]['controls']['fields']['controls'][levels[0].val]
+          ['controls']['values']['controls'][levels[1].val]
+          ['controls']['fields']['controls'][levels[2].val]
+          ['controls']['values']['controls'][levels[3].val] as FormGroup;
+        subItems = items.get('fields') as FormArray;
+        if (!subItems || subItems == null) {
+          this[from]['controls']['fields']['controls'][levels[0].val]
+            ['controls']['values']['controls'][levels[1].val]
+            ['controls']['fields']['controls'][levels[2].val]
+            ['controls']['values']['controls'][levels[3].val]['controls']['fields'] = new FormArray([]);
+          items = this[from]['controls']['fields']['controls'][levels[0].val]
+            ['controls']['values']['controls'][levels[1].val]
+            ['controls']['fields']['controls'][levels[2].val]
+            ['controls']['values']['controls'][levels[3].val] as FormGroup;
+          subItems = items.get('fields') as FormArray;
+          console.log('subItems', subItems);
+        }
+        subItems.push(this.createSubItem4(''));
+        console.log('subItems', subItems);
+      }
+
+
+      if (levels[4] && levels[4].add) { //values 3 level 6
+        let subItems;
+        let items = this[from]['controls']['fields']['controls'][levels[0].val]
+          ['controls']['values']['controls'][levels[1].val]
+          ['controls']['fields']['controls'][levels[2].val]
+          ['controls']['values']['controls'][levels[3].val]
+          ['controls']['fields']['controls'][levels[4].val] as FormGroup;
+        subItems = items.get('values') as FormArray;
+        if (!subItems || subItems == null) {
+          // alert()
+          this[from]['controls']['fields']['controls'][levels[0].val]
+            ['controls']['values']['controls'][levels[1].val]
+            ['controls']['fields']['controls'][levels[2].val]
+            ['controls']['values']['controls'][levels[3].val]
+            ['controls']['fields']['controls'][levels[4].val]['controls']['values'] = new FormArray([]);
+          items = this[from]['controls']['fields']['controls'][levels[0].val]
+            ['controls']['values']['controls'][levels[1].val]
+            ['controls']['fields']['controls'][levels[2].val]
+            ['controls']['values']['controls'][levels[3].val]
+            ['controls']['fields']['controls'][levels[4].val]as FormGroup;
+          subItems = items.get('values') as FormArray;
+          console.log('subItems', subItems);
+        }
+        if (levels[4].type == 'choose') subItems.push(this.createSubItem5(levels[4]));
+        else subItems.push(this.createSubItem5(''));
+      }
+
     }
   }
 
@@ -193,6 +273,24 @@ export class CategoryEditComponent implements OnInit {
         .get('fields')['controls'][levels[2].val]
         .get('values')as FormArray;
       level.removeAt(levels[3].val);
+    }
+
+    if (levels[4] && levels[4].remove) {
+      let level = this[from].get('fields')['controls'][levels[0].val]
+        .get('values')['controls'][levels[1].val]
+        .get('fields')['controls'][levels[2].val]
+        .get('values')['controls'][levels[3].val]
+        .get('fields') as FormArray;
+      level.removeAt(levels[4].val);
+    }
+    if (levels[5] && levels[5].remove) {
+      let level = this[from].get('fields')['controls'][levels[0].val]
+        .get('values')['controls'][levels[1].val]
+        .get('fields')['controls'][levels[2].val]
+        .get('values')['controls'][levels[3].val]
+        .get('fields')['controls'][levels[4].val]
+        .get('values')as FormArray;
+      level.removeAt(levels[5].val);
     }
 
   }
@@ -236,6 +334,7 @@ export class CategoryEditComponent implements OnInit {
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
+        priority: obj.priority || '',
         values: this.formBuilder.array(subArr)
       });
     } else {
@@ -244,16 +343,63 @@ export class CategoryEditComponent implements OnInit {
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
+        priority: obj.priority || '',
         values: this.formBuilder.array([])
       });
     }
+  }
 
+  createSubItem5(subItem): FormGroup { //values 2
+    console.log('createSubItem5 ', );
+     return this.formBuilder.group({
+        value: subItem.value || ''
+     });
+  }
+  createSubItem4(subItem): FormGroup { //fields 3
+    console.log('createSubItem4 ', );
+    if (subItem.type == 'choose' && subItem.values && subItem.values.length > 0) {
+      var subArr = [];
+      for (var i = 0; i < subItem.values.length; i++) {
+        subArr.push(this.createSubItem5(subItem.values[i]));
+      }
+      return this.formBuilder.group({
+        _id: subItem._id ||this.Guid.newGuid(),
+        key: subItem.key,
+        type: subItem.type,
+        priority: subItem.priority,
+        value: subItem.value || '',
+        values: this.formBuilder.array(subArr)
+      });
+    } else {
+      console.log('createSubItem4 return else');
+      return this.formBuilder.group({
+        _id: subItem._id || this.Guid.newGuid(),
+        key: subItem.key,
+        type: subItem.type,
+        priority: subItem.priority,
+        value: subItem.value,
+        values: this.formBuilder.array([])
+      });
+    }
   }
 
   createSubItem3(subItem): FormGroup { //values 2
-    return this.formBuilder.group({
-      value: subItem.value || ''
-    });
+    if (subItem.fields && subItem.fields.length > 0) {
+      var subArr = [];
+      for (var i = 0; i < subItem.fields.length; i++) {
+        subArr.push(this.createSubItem4(subItem.fields[i]));
+      }
+      return this.formBuilder.group({
+        value: subItem.value || '',
+        fields: this.formBuilder.array(subArr)
+      });
+    } else {
+      console.log('createSubItem3 return' );
+      return this.formBuilder.group({
+        value: subItem.value || '',
+        fields: this.formBuilder.array([])
+      });
+    }
   }
 
   createSubItem2(subItem): FormGroup { //fields 2
@@ -262,11 +408,13 @@ export class CategoryEditComponent implements OnInit {
       for (var i = 0; i < subItem.values.length; i++) {
         subArr.push(this.createSubItem3(subItem.values[i]));
       }
+      console.log('subArr ', subArr);
       return this.formBuilder.group({
         _id: subItem._id ||this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
-        //value: subItem.value || '',
+        priority: subItem.priority,
+        value: subItem.value || '',
         values: this.formBuilder.array(subArr)
       });
     } else {
@@ -274,7 +422,8 @@ export class CategoryEditComponent implements OnInit {
         _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
-        //value: subItem.value,
+        priority: subItem.priority,
+        value: subItem.value,
         values: this.formBuilder.array([])
       });
     }
@@ -296,10 +445,10 @@ export class CategoryEditComponent implements OnInit {
         fields: this.formBuilder.array([])
       });
     }
-
   }
 
   createForm(obj) {
+    console.log('obj.title  ', obj.title );
     if (obj.fields && obj.fields.length > 0) {
       var arr = [];
       for (var i = 0; i < obj.fields.length; i++) {
@@ -319,6 +468,7 @@ export class CategoryEditComponent implements OnInit {
         fields: this.formBuilder.array([])
       });
     }
+
 
   }
 
@@ -350,6 +500,7 @@ export class CategoryEditComponent implements OnInit {
     console.log('this.selectedForm.value ', this.selectedForm);
     this.loadingScreen.show();
     if (this.selectedForm.value.id === 0 || this.selectedForm.value.id === '') {
+      console.log('add ');
       delete this.selectedForm.value.id;
       this.subCategoriesService.add(this.category.id, this.selectedForm.value).then((val) => {
         this.helpers.showActionSnackbar(PageAction.Create, true, 'sub-Categories');
@@ -361,13 +512,14 @@ export class CategoryEditComponent implements OnInit {
         console.log('error ', reason);
       });
     } else {
+      console.log('edit ');
       this.subCategoriesService.update(this.category.id, this.selectedForm.value).then((val) => {
-        this.loadingScreen.hide();
         this.helpers.showActionSnackbar(PageAction.Update, true, 'sub-Categories');
         this.getSubCategoriesListing();
-        this.selectedForm = new FormGroup({});
-        this.panelOpened = false;
-        this.finalValues = new FormArray([]);
+        this.loadingScreen.hide();
+        //this.selectedForm = new FormGroup({});
+        //this.panelOpened = false;
+        //this.finalValues = new FormArray([]);
 
       }, (reason) => {
         this.helpers.showActionSnackbar(PageAction.Update, false, 'sub-Categories');
@@ -378,11 +530,7 @@ export class CategoryEditComponent implements OnInit {
   }
 
   addNewSubCategory() {
-    const sub = new FormGroup({
-      title: new FormControl('', [Validators.required]),
-      categoryId: new FormControl(this.category.id),
-      id: new FormControl('')
-    });
+    let sub = this.createForm('');
     this.subCategories.push(sub);
     this.selectedForm = sub;
   }
@@ -517,22 +665,13 @@ export class CategoryEditComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    //console.log('Date.now() + Math.random()', Date.now() ,' ', Math.random());
-
-    //console.log('');
-   /* for (var i = 0; i < 50; i++) {
-      var id = this.Guid.newGuid();
-      console.log(id);
-    }*/
-
-
     console.log('this.route.snapshot.data[\'serverResult\'] ', this.route.snapshot.data['serverResult']);
     this.isEditMode = this.route.snapshot.data['isEditMode'];
     this.subCategories = [];
     if (this.route.snapshot.data['serverResult']) {
       this.category = this.route.snapshot.data['serverResult'];
       this.fieldsForm = this.createForm(this.category);
+      console.log('this.fieldsForm ', this.fieldsForm);
       this.fieldsPanelOpen = false;
       this.photo = this.category.image;
     } else this.photo = '';

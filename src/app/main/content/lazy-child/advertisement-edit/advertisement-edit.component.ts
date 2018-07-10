@@ -32,6 +32,10 @@ export class AdvertisementEditComponent implements OnInit {
   finalValues = new FormArray([]);
   Guid: GUID;
 
+  selectedFieldPanel: FormGroup;
+  fieldsPanelOpen = false;
+  subCategoryFields: FormGroup;
+
 
   // @ViewChild('file') fileSelector: ElementRef;
 
@@ -48,9 +52,16 @@ export class AdvertisementEditComponent implements OnInit {
               public formBuilder: FormBuilder) {
     this.advert = new Advertisement();
     this.Guid = new GUID();
+    this.selectedFieldPanel = new FormGroup({_id:new FormControl(null)});
   }
-
-
+  showMe = false
+  fixBug(index: number) {
+    if(index === 2) {
+      this.showMe = true;
+    } else {
+      this.showMe = false;
+    }
+  }
   getErrorMessage(fieldName, required, phone, min) {
     return this.advertForm.controls[fieldName].hasError(required) ? 'You must enter a value' :
       this.advertForm.controls[fieldName].hasError(phone) ? 'Not a valid phone' :
@@ -121,7 +132,7 @@ export class AdvertisementEditComponent implements OnInit {
   submit() {
     console.log('submit 1');
     console.log('this.subCategoryFields ', this.subCategoryFields.value);
-    this.advertForm.value.fields = this.subCategoryFields.value.fields;
+    this.advertForm.value.fields = this.subCategoryFields.value.fields ? this.subCategoryFields.value.fields : null;
     console.log('this.advertForm add', this.advertForm.value);
 
     // this.advertForm.value.fields = this.advert.subCategory.fields;
@@ -230,13 +241,11 @@ export class AdvertisementEditComponent implements OnInit {
 
   //============================================================================//
 
-  selectedFieldPanel: FormGroup;
-  fieldsPanelOpen = false;
-  subCategoryFields: FormGroup;
-
   setSelectedFieldsPanel(field){
+    console.log('field ', field);
     this.selectedFieldPanel = field;
-    this.fieldsPanelOpen = true;
+    console.log('selectedFieldPanel.value._id == field.value._id ', this.selectedFieldPanel.value._id , field.value._id);
+    //this.fieldsPanelOpen = !this.fieldsPanelOpen;
   }
   addSomething(levels = null, from): void {
     console.log("addSomething ", levels);
@@ -354,7 +363,7 @@ export class AdvertisementEditComponent implements OnInit {
   }
 
   createItem(obj): FormGroup { //Fields 1
-    console.log('choose ', obj);
+    //console.log('choose ', obj);
     if (obj.type == 'choose' && obj.values && obj.values.length > 0) {
       var subArr = [];
       for (var i = 0; i < obj.values.length; i++) {
@@ -365,6 +374,7 @@ export class AdvertisementEditComponent implements OnInit {
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
+        priority: obj.priority,
         values: this.formBuilder.array(subArr)
       });
     } else {
@@ -373,6 +383,7 @@ export class AdvertisementEditComponent implements OnInit {
         key: obj.key || 'New Field',
         type: obj.type || '',
         value: obj.value || '',
+        priority: obj.priority,
         values: this.formBuilder.array([])
       });
     }
@@ -380,14 +391,14 @@ export class AdvertisementEditComponent implements OnInit {
   }
 
   createSubItem3(subItem): FormGroup { //values 2
-    console.log('subItem ', subItem);
+    //console.log('subItem ', subItem);
     return this.formBuilder.group({
       value: subItem.value || ''
     });
   }
 
   createSubItem2(subItem): FormGroup { //fields 2
-    console.log('createSubItem2' ,subItem);
+   // console.log('createSubItem2' ,subItem);
     if (subItem.type == 'choose' && subItem.values && subItem.values.length > 0) {
       var subArr = [];
       for (var i = 0; i < subItem.values.length; i++) {
@@ -397,7 +408,8 @@ export class AdvertisementEditComponent implements OnInit {
         _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
-        //value: subItem.value || '',
+        priority: subItem.priority,
+        value: subItem.value,
         values: this.formBuilder.array(subArr)
       });
     } else {
@@ -405,14 +417,15 @@ export class AdvertisementEditComponent implements OnInit {
         _id: subItem._id || this.Guid.newGuid(),
         key: subItem.key,
         type: subItem.type,
-        //value: subItem.value,
+        priority: subItem.priority,
+        value: subItem.value,
         values: this.formBuilder.array([])
       });
     }
   }
 
   createSubItem(subItem): FormGroup { //values 1
-    if (subItem.fields && subItem.fields.length > 0) {
+   /* if (subItem.fields && subItem.fields.length > 0) {
       var subArr = [];
       for (var i = 0; i < subItem.fields.length; i++) {
         subArr.push(this.createSubItem2(subItem.fields[i]));
@@ -421,21 +434,22 @@ export class AdvertisementEditComponent implements OnInit {
         value: subItem.value || '',
         fields: this.formBuilder.array(subArr)
       });
-    } else {
+    } else {*/
       return this.formBuilder.group({
         value: subItem.value || '',
-        fields: this.formBuilder.array([])
+        //fields: this.formBuilder.array([])
       });
-    }
+    //}
   }
 
   createForm(obj) {
     if (obj.fields && obj.fields.length > 0) {
       var arr = [];
       for (var i = 0; i < obj.fields.length; i++) {
+        //console.log('obj.fields[i] ', obj.fields[i]);
         arr.push(this.createItem(obj.fields[i]));
       }
-      console.log('arr', arr);
+      //console.log('arr', arr);
       return this.formBuilder.group({
         fields: this.formBuilder.array(arr)
       });
@@ -470,8 +484,8 @@ export class AdvertisementEditComponent implements OnInit {
       isBookmarked: new FormControl(this.advert.isBookmarked),
       cityId: new FormControl(this.advert.cityId),
       ownerId: new FormControl(this.advert.ownerId),
-      categoryId: new FormControl(this.advert.categoryId),
-      subCategoryId: new FormControl(this.advert.subCategoryId),
+      categoryId: new FormControl(this.advert.categoryId, [Validators.required]),
+      subCategoryId: new FormControl(this.advert.subCategoryId, [Validators.required]),
       // subCategory: new FormControl(this.advert.subCategory),
     });
     console.log('advertForm ', this.advertForm);
@@ -482,7 +496,8 @@ export class AdvertisementEditComponent implements OnInit {
       this.advertForm.controls.ownerId = new FormControl(JSON.parse(localStorage.me).id);
      /// console.log('this.advertForm.controls.ownerId ', this.advertForm.controls.ownerId);
     } else {
-      if (this.advert.fields && this.advert.fields !== null) {
+      if (this.advert.subCategory && this.advert.subCategory !== null) {
+        console.log('this.advert.subCategory ', this.advert.subCategory);
         this.subCategoryFields = this.createForm(this.advert);
         console.log('this.subCategoryFields ', this.subCategoryFields);
       }

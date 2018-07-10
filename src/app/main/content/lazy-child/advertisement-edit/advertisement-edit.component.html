@@ -44,14 +44,14 @@
               (click)="f.ngSubmit.emit()" type="submit">
         <span>SAVE</span>
       </button>
-     <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
-              (click)="uploadImages(advertForm.controls.images.value)">
-        <span>aa</span>
-      </button>-->
-     <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
-              (click)="printt(advertForm.value)">
-        <span>bb</span>
-      </button>-->
+      <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+               (click)="uploadImages(advertForm.controls.images.value)">
+         <span>aa</span>
+       </button>-->
+      <!-- <button mat-raised-button class="save-product-button mat-white-bg mt-16 mt-sm-0"
+               (click)="printt(advertForm.value)">
+         <span>bb</span>
+       </button>-->
     </div>
     <!-- / HEADER -->
 
@@ -60,8 +60,9 @@
 
       <!-- CONTENT -->
       <div class="content">
-        <form [formGroup]="advertForm"  novalidate (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p" fxLayout="column" fxFlex>
-          <mat-tab-group>
+        <form [formGroup]="advertForm" novalidate (ngSubmit)="onSubmit(f)" #f="ngForm" class="product w-100-p"
+              fxLayout="column" fxFlex>
+          <mat-tab-group (selectChange)="fixBug($event.index)">
 
             <mat-tab label="Basic Info">
 
@@ -112,7 +113,8 @@
                   <div fxLayout="row" fxLayoutAlign="start start">
                     <mat-icon class="mr-12 mt-12">accessibility</mat-icon>
                     <mat-form-field class="w-100-p">
-                      <mat-select placeholder="Status" name="status" ([value])="advertForm.value.status" formControlName="status">
+                      <mat-select placeholder="Status" name="status" ([value])="advertForm.value.status"
+                                  formControlName="status">
                         <mat-option value="active">Active</mat-option>
                         <mat-option value="closed">Closed</mat-option>
                       </mat-select>
@@ -137,7 +139,7 @@
               <div class="images-tab" fxLayout="row" fxLayout.xs="column">
                 <div class="images-wrapper tab-content p-24" fusePerfectScrollbar fxFlex="80%">
                   <image-upload
-                    [uploadedFiles]="advertForm.controls.images.value"  max="20"
+                    [uploadedFiles]="advertForm.controls.images.value" max="20"
                     (uploadFinished)="onUploadFinished($event)"
                     (removed)="onRemoved($event)"
                   ></image-upload>
@@ -148,9 +150,9 @@
 
               <div fxLayout="row" fxLayout.xs="column">
                 <div class="tab-content p-24" fusePerfectScrollbar fxFlex="100%">
-                 <!-- <div fxLayout="row" fxLayoutAlign="start start">
-                    <mat-checkbox formControlName="isBookmarked" name="isBookmarked">Is Bookmarked</mat-checkbox>
-                  </div>-->
+                  <!-- <div fxLayout="row" fxLayoutAlign="start start">
+                     <mat-checkbox formControlName="isBookmarked" name="isBookmarked">Is Bookmarked</mat-checkbox>
+                   </div>-->
 
 
                   <div fxLayout="row" fxLayoutAlign="start start">
@@ -199,7 +201,7 @@
                     <mat-form-field class="w-100-p">
                       <mat-select placeholder="Category" [(value)]="advertForm.value.categoryId" name="categoryId"
                                   formControlName="categoryId">
-                        <mat-option value="" (click)="setSelectedCategory('')">None</mat-option>
+                        <!--<mat-option value="" (click)="setSelectedCategory('')">None</mat-option>-->
                         <mat-option *ngFor="let category of categories" [value]="category.id"
                                     (click)="setSelectedCategory(category)">
                           <!--<img [src]="category.image" [alt]="category.image">-->
@@ -209,13 +211,14 @@
                     </mat-form-field>
                   </div>
 
-                  <div fxLayout="row" fxLayoutAlign="start start" *ngIf="advert.category && advert.category!==null && advert.category!==''">
+                  <div fxLayout="row" fxLayoutAlign="start start"
+                       *ngIf="advert.category && advert.category!==null && advert.category!==''">
                     <mat-icon class="mr-12 mt-12">group_work</mat-icon>
                     <mat-form-field class="w-100-p">
                       <mat-select placeholder="Sub Category" [(value)]="advertForm.value.subCategoryId"
                                   name="subCategoryId"
                                   formControlName="subCategoryId">
-                        <mat-option value="" (click)="setSelectedSubCategory('')">None</mat-option>
+                        <!--<mat-option value="" (click)="setSelectedSubCategory('')">None</mat-option>-->
                         <mat-option *ngFor="let subCategory of advert.category.subCategories" [value]="subCategory.id"
                                     (click)="setSelectedSubCategory(subCategory)">
                           {{subCategory.title}}
@@ -223,25 +226,90 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div *ngIf="advertForm.value.subCategoryId">
+                  <div *ngIf="subCategoryFields && subCategoryFields.controls['fields']">
                     <div>
-                     <h3>Sub-Category Fields</h3>
+                      <h3>Sub-Category Fields</h3>
                     </div>
                     <div>
-                      <div [formGroup]="subCategoryFields">
-                        <mat-accordion>
-                          <div formArrayName="fields" >
-                            <mat-expansion-panel *ngFor="let field of subCategoryFields.controls['fields'].controls; let i = index"
-                                                 (opened)="setSelectedFieldsPanel(field)"
-                                                 [expanded]="selectedFieldPanel && fieldsPanelOpen">
-
+                      <div *ngIf="advertForm.value.subCategoryId" [formGroup]="subCategoryFields">
+                        <mat-accordion *ngIf="showMe">
+                          <div formArrayName="fields">
+                            <mat-expansion-panel
+                              *ngFor="let field of subCategoryFields.controls['fields'].controls; let i = index"
+                              [expanded]="false">
+                              <!--(click)="setSelectedFieldsPanel(field)"-->
                               <mat-expansion-panel-header>
                                 <mat-panel-title>
                                   <h3 class="text-bold"> {{field.value.key}}</h3>
                                 </mat-panel-title>
                               </mat-expansion-panel-header>
-                              <div *ngIf="selectedFieldPanel">
-                                <div formGroupName="{{i}}" fxLayout="row" fxLayoutGap="2rem" fxFlex="10%">
+                              <div>
+                                <!--1-->
+                                <div formGroupName="{{i}}" fxLayout="column">
+                                  <div fxLayout="row" fxLayoutGap="2rem">
+                                    <button mat-icon-button>
+                                      <mat-icon>subdirectory_arrow_right</mat-icon>
+                                    </button>
+                                    <button mat-icon-button (click)="removeSomething([{val:i, remove: true}], 'subCategoryFields')"
+                                            matTooltip="Remove {{field.controls.key.value}}">
+                                      <mat-icon>delete</mat-icon>
+                                    </button>
+                                    <mat-form-field class="w-100-p">
+                                      <input matInput name="fieldkey" placeholder="Key" formControlName="key" required>
+                                    </mat-form-field>
+                                    <mat-form-field class="w-100-p"
+                                                    *ngIf="field.controls.type.value === 'text' || field.controls.type.value === 'choose'">
+                                      <input matInput name="fieldkey" placeholder="Value" formControlName="value">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-100-p" *ngIf="field.controls.type.value === 'number'">
+                                      <input type="number" matInput name="fieldkey" placeholder="Value"
+                                             formControlName="value">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-100-p">
+                                      <input type="number" matInput name="fieldPriority" placeholder="Priority"
+                                             formControlName="priority">
+                                    </mat-form-field>
+                                    <mat-form-field class="w-100-p">
+                                      <mat-select placeholder="Type" name="fieldtype" formControlName="type"
+                                                  ([value])="field.controls.type.value"
+                                                  (change)="onSelectType([{val:i, type:'choose'}], field.controls.type.value, 'subCategoryFields')">
+                                        <mat-option value="text">Text</mat-option>
+                                        <mat-option value="number">Number</mat-option>
+                                        <mat-option value="choose">Select</mat-option>
+                                      </mat-select>
+                                    </mat-form-field>
+                                  </div>
+                                  <!--2-->
+                                  <div
+                                    *ngIf="field.controls.type.value === 'choose' && field.controls.values && field.controls.values.length>0"
+                                    formArrayName="values" fxLayout="column">
+                                    <div class="ml-32" *ngFor="let vv of field.controls.values.controls; let j = index"
+                                         fxLayout="column">
+                                      <div fxLayout="column" formGroupName="{{j}}">
+                                        <div fxLayout="row" fxLayoutGap="2rem">
+                                          <button mat-icon-button>
+                                            <mat-icon>subdirectory_arrow_right</mat-icon>
+                                          </button>
+                                          <button mat-icon-button
+                                                  (click)="removeSomething([{val: i}, {val: j, remove: true}], 'subCategoryFields')"
+                                                  matTooltip="Remove {{vv.controls.value.value}}">
+                                            <mat-icon>delete</mat-icon>
+                                          </button>
+                                          <mat-form-field class="w-100-p" fxFlex="30%">
+                                            <input matInput name="fieldvalue" placeholder="Value" formControlName="value">
+                                          </mat-form-field>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <button class="ml-32" type="button" mat-icon-button
+                                            (click)="addSomething([{val: i, add: true}], 'subCategoryFields')"
+                                            matTooltip="Add Value to {{field.controls.key.value}}">
+                                      <mat-icon aria-label="add value">add</mat-icon>
+                                    </button>
+                                  </div>
+                                </div>
+
+                               <!-- <div formGroupName="{{i}}" fxLayout="row" fxLayoutGap="2rem" fxFlex="10%">
                                   <mat-form-field class="w-100-p">
                                     <input matInput name="fieldkey" placeholder="Field Key" formControlName="key"
                                            required>
@@ -266,28 +334,31 @@
                                   </mat-form-field>
                                   <div fxLayout="row" fxLayoutAlign="start start">
                                     <div fxFlex="56%"
-                                         *ngIf="field.controls.type.value === 'choose' && field.controls.values && field.controls.values.length>0"
+                                         *ngIf="field.value.type === 'choose' && field.value.values && field.value.values.length>0"
                                          fxLayout="column"
                                          formArrayName="values">
                                       <div *ngFor="let vv of field.controls.values.controls; let j = index ">
-                                        <div fxLayout="row" formGroupName="{{j}}" fxFlex="25%" fxLayoutGap="2rem">
+                                        <div fxLayout="row" formGroupName="{{j}}" fxFlex="30%" fxLayoutGap="2rem">
                                           <mat-form-field class="w-100-p">
-                                            <input matInput name="fieldvalue" placeholder="Value" formControlName="value">
+                                            <input matInput name="fieldvalue" placeholder="Value"
+                                                   formControlName="value">
                                           </mat-form-field>
 
-                                          <!--3-->
-                                          <div fxLayout="row" fxLayoutAlign="start start" fxFlex="240%">
+                                          &lt;!&ndash;3&ndash;&gt;
+                                          &lt;!&ndash;<div fxLayout="row" fxLayoutAlign="start start" fxFlex="240%">
                                             <div *ngIf="vv.controls.fields "
                                                  fxLayout="column"
                                                  formArrayName="fields">
                                               <div *ngFor="let ff of vv.controls.fields.controls; let k = index ">
-                                                <div fxLayout="row" formGroupName="{{k}}" fxLayoutGap="2rem" fxFlex="12%">
+                                                <div fxLayout="row" formGroupName="{{k}}" fxLayoutGap="2rem"
+                                                     fxFlex="12%">
                                                   <mat-form-field class="w-100-p">
                                                     <input matInput name="ff" placeholder="Field Key"
                                                            formControlName="key">
                                                   </mat-form-field>
                                                   <mat-form-field class="w-100-p">
-                                                    <mat-select name="fft" placeholder="Field Type" formControlName="type"
+                                                    <mat-select name="fft" placeholder="Field Type"
+                                                                formControlName="type"
                                                                 ([value])="ff.controls.type.value"
                                                                 (change)="onSelectType([{val:i}, {val:j}, {val:k,type:'choose'}], ff.controls.type.value,'subCategoryFields')">
                                                       <mat-option value="text">Text</mat-option>
@@ -297,7 +368,7 @@
                                                   </mat-form-field>
 
 
-                                                  <!--4-->
+                                                  &lt;!&ndash;4&ndash;&gt;
 
                                                   <div fxLayout="row" fxLayoutAlign="start start" fxFlex="90%">
                                                     <div
@@ -329,7 +400,7 @@
                                                       <br/>
                                                     </div>
                                                   </div>
-                                                  <!--/4-->
+                                                  &lt;!&ndash;/4&ndash;&gt;
                                                   <button type="button" mat-icon-button mat-raised-button color="warn"
                                                           (click)="removeSomething([{val:i},{val:j},{val:k, remove:true}], 'subCategoryFields')"
                                                           matTooltip="Remove {{ff.controls.key.value}}">
@@ -353,8 +424,8 @@
                                             <br/>
                                             <br/>
                                             <br/>
-                                          </div>
-                                          <!--/3-->
+                                          </div>&ndash;&gt;
+                                          &lt;!&ndash;/3&ndash;&gt;
 
                                           <button type="button" mat-raised-button mat-icon-button color="primary"
                                                   (click)="removeSomething([{val: i}, {val: j, remove: true}], 'subCategoryFields')"
@@ -368,19 +439,19 @@
                                               matTooltip="Add Value to {{field.controls.key.value}}">
                                         <mat-icon aria-label="add value">add</mat-icon>
                                       </button>
-
                                       <br/>
                                       <br/>
                                       <br/>
                                       <br/>
                                     </div>
+
                                     <button type="button" mat-raised-button mat-icon-button color="accent"
                                             (click)="removeSomething([{val:i, remove: true}], 'subCategoryFields')"
                                             matTooltip="Remove {{field.controls.key.value}}">
                                       <mat-icon aria-label="remove">delete</mat-icon>
                                     </button>
                                   </div>
-                                </div>
+                                </div>-->
                               </div>
                             </mat-expansion-panel>
                           </div>
@@ -434,14 +505,11 @@
 
                         </div>-->
                       </div>
-                      <button *ngIf="subCategory" type="button" mat-raised-button mat-icon-button color="accent"
+                      <button *ngIf="advert.subCategory" type="button" mat-icon-button
                               (click)="addSomething(null, 'subCategoryFields')"
-                              matTooltip="Add Field to the Sub-Category {{subCategory.title}}">
+                              matTooltip="Add Field to the Sub-Category {{advert.subCategory.title}}">
                         <mat-icon aria-label="add field">add</mat-icon>
                       </button>
-                      <!--<button type="button" mat-icon-button color="accent" (click)="addField()">
-                        <mat-icon aria-label="addd">add</mat-icon>
-                      </button>-->
                     </div>
                   </div>
 

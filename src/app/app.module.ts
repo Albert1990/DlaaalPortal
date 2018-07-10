@@ -17,7 +17,8 @@ import {FuseSampleModule} from './main/content/sample/sample.module';
 import {TranslateModule} from '@ngx-translate/core';
 import {HelpersService} from './main/content/shared/helpers.service';
 import {AuthService} from './main/content/auth/auth.service';
-// import {AdvertisementsModule} from './main/content/advertisements/advertisements.module';
+import {HashLocationStrategy, LocationStrategy} from "@angular/common";
+
 
 const appRoutes: Routes = [
   {
@@ -108,7 +109,8 @@ const appRoutes: Routes = [
     AuthService,
     AuthGuardService,
     AnonymousGuardService,
-    HelpersService
+    HelpersService,
+	 {provide: LocationStrategy, useClass: HashLocationStrategy}
   ],
   bootstrap: [
     AppComponent

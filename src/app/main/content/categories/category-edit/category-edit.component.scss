@@ -1,3 +1,5 @@
+
+
 #product {
 
   .header {
@@ -26,16 +28,29 @@
     .mat-tab-group,
     .mat-tab-body-wrapper,
     .tab-content{
-      flex: 1 1 auto;
-      max-width: 100%;
+      //flex: 1 1 auto;
+      //max-width: 100%;
     }
 
     .mat-tab-body-content {
-      display: flex;
+      //display: flex;
+      background: blue;
+      .tab-content{
+        background: blue;
+        .mat-accordion{
+          background: blue;
+          .mat-expansion-panel{
+            background: blue;
+            .mat-expansion-panel-content{
+              overflow: unset !important;
+            }
+          }
+        }
+      }
     }
 
     .mat-tab-label {
-      height: 64px;
+      //height: 64px;
     }
 
     .product-image {
