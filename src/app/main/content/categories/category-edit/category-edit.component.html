@@ -100,11 +100,6 @@
                               <mat-icon>delete</mat-icon>
                             </button>
 
-                            <button type="button" mat-icon-button>
-                              <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
-                            </button>
-
-
                             <mat-form-field class="w-100-p">
                               <input matInput name="fieldkey" placeholder="Key" formControlName="key" required>
                             </mat-form-field>
@@ -124,6 +119,11 @@
                                 <mat-option value="choose">Select</mat-option>
                               </mat-select>
                             </mat-form-field>
+
+                            <button type="button" mat-icon-button>
+                              <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
+                            </button>
+
                           </div>
                           <!--2-->
 
@@ -158,11 +158,6 @@
                                             <mat-icon>delete</mat-icon>
                                           </button>
 
-                                          <button type="button" mat-icon-button>
-                                            <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
-                                          </button>
-
-
 
                                           <mat-form-field class="w-100-p">
                                             <input matInput name="ff" placeholder="Key" formControlName="key">
@@ -183,6 +178,10 @@
                                               <mat-option value="choose">Select</mat-option>
                                             </mat-select>
                                           </mat-form-field>
+
+                                          <button type="button" mat-icon-button>
+                                            <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
+                                          </button>
                                         </div>
                                         <!--4-->
                                         <div *ngIf="ff.controls.type.value === 'choose'" formArrayName="values" fxLayout="column">
@@ -216,12 +215,6 @@
                                                           <mat-icon>delete</mat-icon>
                                                         </button>
 
-                                                        <button type="button" mat-icon-button>
-                                                          <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
-                                                        </button>
-
-
-
                                                         <mat-form-field class="w-100-p">
                                                           <input matInput name="fff" placeholder="Key" formControlName="key">
                                                         </mat-form-field>
@@ -241,6 +234,11 @@
                                                             <mat-option value="choose">Select</mat-option>
                                                           </mat-select>
                                                         </mat-form-field>
+
+                                                        <button type="button" mat-icon-button>
+                                                          <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
+                                                        </button>
+
                                                       </div>
                                                       <!--6-->
 
@@ -348,11 +346,6 @@
                                     <mat-icon>delete</mat-icon>
                                   </button>
 
-                                  <button type="button" mat-icon-button>
-                                    <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
-                                  </button>
-
-
 
                                   <mat-form-field class="w-100-p">
                                     <input matInput name="fieldkey" placeholder="Key" formControlName="key" required>
@@ -373,6 +366,11 @@
                                       <mat-option value="choose">Select</mat-option>
                                     </mat-select>
                                   </mat-form-field>
+
+                                  <button type="button" mat-icon-button>
+                                    <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
+                                  </button>
+
                                 </div>
                                 <!--2-->
 
@@ -407,10 +405,6 @@
                                                   <mat-icon>delete</mat-icon>
                                                 </button>
 
-                                                <button type="button">
-                                                  <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
-                                                </button>
-
                                                 <mat-form-field class="w-100-p">
                                                   <input matInput name="ff" placeholder="Key" formControlName="key">
                                                 </mat-form-field>
@@ -430,6 +424,11 @@
                                                     <mat-option value="choose">Select</mat-option>
                                                   </mat-select>
                                                 </mat-form-field>
+
+                                                <button type="button">
+                                                  <mat-checkbox matTooltip="Is In Filter?" formControlName="isInFilter"></mat-checkbox>
+                                                </button>
+
                                               </div>
                                               <!--4-->
                                               <div *ngIf="ff.controls.type.value === 'choose'" formArrayName="values" fxLayout="column">
