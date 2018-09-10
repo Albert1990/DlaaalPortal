@@ -335,6 +335,7 @@ export class CategoryEditComponent implements OnInit {
         type: obj.type || '',
         value: obj.value || '',
         priority: obj.priority || '',
+        isInFilter: obj.isInFilter || '',
         values: this.formBuilder.array(subArr)
       });
     } else {
@@ -344,6 +345,7 @@ export class CategoryEditComponent implements OnInit {
         type: obj.type || '',
         value: obj.value || '',
         priority: obj.priority || '',
+        isInFilter: obj.isInFilter || '',
         values: this.formBuilder.array([])
       });
     }
@@ -367,6 +369,7 @@ export class CategoryEditComponent implements OnInit {
         key: subItem.key,
         type: subItem.type,
         priority: subItem.priority,
+        isInFilter: subItem.isInFilter,
         value: subItem.value || '',
         values: this.formBuilder.array(subArr)
       });
@@ -377,6 +380,7 @@ export class CategoryEditComponent implements OnInit {
         key: subItem.key,
         type: subItem.type,
         priority: subItem.priority,
+        isInFilter: subItem.isInFilter,
         value: subItem.value,
         values: this.formBuilder.array([])
       });
@@ -414,6 +418,7 @@ export class CategoryEditComponent implements OnInit {
         key: subItem.key,
         type: subItem.type,
         priority: subItem.priority,
+        isInFilter: subItem.isInFilter,
         value: subItem.value || '',
         values: this.formBuilder.array(subArr)
       });
@@ -423,6 +428,7 @@ export class CategoryEditComponent implements OnInit {
         key: subItem.key,
         type: subItem.type,
         priority: subItem.priority,
+        isInFilter: subItem.isInFilter,
         value: subItem.value,
         values: this.formBuilder.array([])
       });
